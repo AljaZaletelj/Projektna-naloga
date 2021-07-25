@@ -82,7 +82,8 @@ def osnovni_zaslon():
     print("1) pogledal stopnje")
     print("2) pogledal razrede")
     print("3) dodal vajo")
-    print("4)pogledal program")
+    print("4) pogledal program")
+    print("5) pogledal seznam programov")
     vnos = input("> ")
     if vnos == "1":
         pokazi_stopnje()
@@ -92,37 +93,45 @@ def osnovni_zaslon():
         dodaj_vajo()
     elif vnos == "4":
         prikazi_program()
-
+    elif vnos == "5":
+        pokazi_programe()
 
 def pokazi_stopnje():
     for stopnja in edini_model.stopnje:
         print(f"-{stopnja.ime}")
 
 def dodaj_vajo():
+    print("Izberi stopnjo:")
+    stopnja = izberi_stopnjo(edini_model.stopnje)
     print("V kateri program bi rad dodal vajo?")
-    program = input("Vnesi ime programa: ")
+    program = izberi_program(stopnja.programi)
     print("V katero kategorijo spada vaja?")
     kategorija = input("Kategorija> ")
     print("Vnesi ime vaje: ")
     ime = input("Ime> ")
-    print("Vnesi opis vaje: ")
-    opis = input("Opis> ")
-    print("Dodaj glasbo: ")
-    glasba = input("Glasba> ")
-    print("Dodaj posnetek: ")
-    posnetek = input("Posnetek> ")
-    nova_vaja = Vaja(kategorija, ime, opis, glasba, posnetek)
+    #print("Dodaj glasbo: ")
+    #glasba = input("Glasba> ")
+    #print("Dodaj posnetek: ")
+    #posnetek = input("Posnetek> ")
+    nova_vaja = Vaja(ime, kategorija, program)
     program.dodaj_vajo(nova_vaja)
+    print(f"Vaja {ime} je uspešno dodana.")
 
 def pokazi_programe():
-    print("Izberi stopnjo programa, ki bo si ga rad ogledal:")
-    stopnja = input("Stopnja> ") 
+    print("Izberi stopnjo programa, ki bo si ga rad ogledal: ")
+    stopnja = izberi_stopnjo(edini_model.stopnje)
+    for program in stopnja.programi:
+        print(f"-{program.ime}")
     
 def prikazi_program():
-    print("Izberi stopnjo programa, ki bo si ga rad ogledal:")
-    stopnja = input("Stopnja> ")
-
-
+    print("Izberi stopnjo programa, ki bo si ga rad ogledal: ")
+    stopnja = izberi_stopnjo(edini_model.stopnje)
+    for program in stopnja.programi:
+        print(f"-{program.ime}")
+    print("Izberi program, ki bi si ga rad ogledal:")
+    program = izberi_program(stopnja.programi)
+    for vaja in program.vaje:
+        print(f"-{vaja.ime}, {vaja.kategorija}")
 
 
 tekstovni_vmesnik()
