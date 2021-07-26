@@ -1,28 +1,14 @@
-from model import Model, Vaja, Stopnja, Program
+from model import Zvezek, Vaja, Stopnja, Program
 
-edini_model = Model()
-prvi_razred = Stopnja("1R")
-drugi_razred = Stopnja("2R")
-tretji_razred = Stopnja("3R")
+DATOTEKA_S_STANJEM = "stanje.json"
 
-dov1 = Program("dov1", drugi_razred)
-dov2 = Program("dov2", drugi_razred)
-
-edini_model.dodaj_stopnjo(prvi_razred)
-edini_model.dodaj_stopnjo(drugi_razred)
-edini_model.dodaj_stopnjo(tretji_razred)
-
-drugi_razred.dodaj_program(dov1)
-drugi_razred.dodaj_program(dov2)
-
-plie = Vaja("Plie", "Drog", dov1)
-dov1.dodaj_vajo(plie)
+try:
+    zvezek = Zvezek.nalozi(DATOTEKA_S_STANJEM)
+except FileNotFoundError:
+    zvezek = Zvezek()
 
 
-###########################################################
 # Pomožne funkcije za prikaz
-###########################################################
-
 
 def prikaz_stopnje(stopnja):
     return f"{stopnja.ime}"
@@ -30,9 +16,10 @@ def prikaz_stopnje(stopnja):
 def prikaz_programa(program):
     return f"{program.ime}, {program.stopnja}"
 
-###########################################################
+def prikaz_vaje(vaja):
+    return f"{vaja.ime}, {vaja.kategorija} iz {vaja.program}"
+
 # Pomožne funkcije za vnos
-###########################################################
 
 def vnesi_stevilo(pozdrav):
     """S standardnega vhoda prebere naravno število."""
@@ -65,44 +52,49 @@ def izberi_stopnjo(stopnje):
 def izberi_program(programi):
     return izberi([(prikaz_programa(program), program) for program in programi])
 
-###########################################################
+def izberi_vajo(vaje):
+    return izberi([(prikaz_vaje(vaja), vaja) for vaja in vaje])
+
+
 # Tekstovni vmesnik
-###########################################################
 
 def tekstovni_vmesnik():
     uvodni_pozdrav()
     while True:
-        osnovni_zaslon()
+        try:
+            print("Kaj bi radi naredili?")
+            moznosti = [
+                ("pogledal stopnje", pokazi_stopnje),
+                ("pogledal razrede", pokazi_stopnje),
+                ("dodal vajo", dodaj_vajo),
+                ("odstranil_vajo", odstrani_vajo),
+                ("pogledal program", prikazi_program),
+                ("pogledal seznam programov", pokazi_programe)
+            ]
+            izbira = izberi(moznosti)
+            izbira()
+            print()
+            input("Pritisnite ENTER za shranjevanje in vrnitev v osnovni meni...")
+            zvezek.shrani(DATOTEKA_S_STANJEM)
+        except ValueError as e:
+            print(e.args[0])
+        except KeyboardInterrupt:
+            print()
+            print("Nasvidenje!")
+            return
 
 def uvodni_pozdrav():
     print("Pozdravljen!")
+    print("Za izhod pritisnite tipko Ctrl-C.")
 
-def osnovni_zaslon():
-    print("Kaj bi rad počel?")
-    print("1) pogledal stopnje")
-    print("2) pogledal razrede")
-    print("3) dodal vajo")
-    print("4) pogledal program")
-    print("5) pogledal seznam programov")
-    vnos = input("> ")
-    if vnos == "1":
-        pokazi_stopnje()
-    elif vnos == "2":
-        pass
-    elif vnos == "3":
-        dodaj_vajo()
-    elif vnos == "4":
-        prikazi_program()
-    elif vnos == "5":
-        pokazi_programe()
 
 def pokazi_stopnje():
-    for stopnja in edini_model.stopnje:
+    for stopnja in zvezek.stopnje:
         print(f"-{stopnja.ime}")
 
 def dodaj_vajo():
     print("Izberi stopnjo:")
-    stopnja = izberi_stopnjo(edini_model.stopnje)
+    stopnja = izberi_stopnjo(zvezek.stopnje)
     print("V kateri program bi rad dodal vajo?")
     program = izberi_program(stopnja.programi)
     print("V katero kategorijo spada vaja?")
@@ -117,21 +109,35 @@ def dodaj_vajo():
     program.dodaj_vajo(nova_vaja)
     print(f"Vaja {ime} je uspešno dodana.")
 
+def odstrani_vajo():
+    print("Izberi stopnjo iz katere bi rad izbrisal vajo:")
+    stopnja = izberi_stopnjo(zvezek.stopnje)
+    print("Iz katerega programa bi rad izbrisal vajo?")
+    program = izberi_program(stopnja.programi)
+    print("Izberi vajo, ki bi jo rad izbrisal:")
+    vaja = izberi_vajo(program.vaje)
+    if (input(f"Ste prepričani, da želite odstaniti vajo {vaja.ime}? [da/NE]") == "da"):
+        program.odstrani_vajo(vaja)
+        print("Vaja je uspešno odstanjena!")
+    else:
+        ("Odstranitev vaje je preklicana.")
+
 def pokazi_programe():
     print("Izberi stopnjo programa, ki bo si ga rad ogledal: ")
-    stopnja = izberi_stopnjo(edini_model.stopnje)
+    stopnja = izberi_stopnjo(zvezek.stopnje)
     for program in stopnja.programi:
         print(f"-{program.ime}")
     
 def prikazi_program():
     print("Izberi stopnjo programa, ki bo si ga rad ogledal: ")
-    stopnja = izberi_stopnjo(edini_model.stopnje)
+    stopnja = izberi_stopnjo(zvezek.stopnje)
     for program in stopnja.programi:
         print(f"-{program.ime}")
     print("Izberi program, ki bi si ga rad ogledal:")
     program = izberi_program(stopnja.programi)
     for vaja in program.vaje:
         print(f"-{vaja.ime}, {vaja.kategorija}")
+
 
 
 tekstovni_vmesnik()
