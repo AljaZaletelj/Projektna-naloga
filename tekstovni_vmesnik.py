@@ -3,9 +3,10 @@ from model import Zvezek, Vaja, Stopnja, Program
 DATOTEKA_S_STANJEM = "stanje.json"
 
 try:
-    zvezek = Zvezek.nalozi(DATOTEKA_S_STANJEM)
+    zvezek = Zvezek.nalozi_stanje(DATOTEKA_S_STANJEM)
 except FileNotFoundError:
     zvezek = Zvezek()
+
 
 
 # Pomožne funkcije za prikaz
