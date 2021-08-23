@@ -122,7 +122,7 @@ class Vaja:
         self.opis = opis
         self.glasba = glasba
         self.posnetek = posnetek
-        
+
 
 
 #############################################################################
@@ -135,6 +135,8 @@ class Uporabnik:
         self.uporabnisko_ime = uporabnisko_ime
         self.zasifrirano_geslo = zasifrirano_geslo
         self.zvezek = zvezek
+
+    #prijava
     
     @staticmethod
     def prijava(uporabnisko_ime, geslo_v_cistopisu):
@@ -146,6 +148,29 @@ class Uporabnik:
         else:
             raise ValueError("Geslo je napačno")
 
+
+    
+    @staticmethod
+    def ime_uporabnikove_datoteke(uporabnisko_ime):
+        return f"{uporabnisko_ime}.json"
+
+    @staticmethod
+    def iz_datoteke(uporabnisko_ime):
+        try:
+            with open(Uporabnik.ime_uporabnikove_datoteke(uporabnisko_ime)) as datoteka:
+                slovar = json.load(datoteka)
+                return Uporabnik.iz_slovarja(slovar)
+        except FileNotFoundError:
+            return None
+
+
+    def preveri_geslo(self, geslo_v_cistopisu):
+        sol, _ = self.zasifrirano_geslo.split("$")
+        return self.zasifrirano_geslo == Uporabnik._zasifriraj_geslo(geslo_v_cistopisu, sol)
+
+
+    #registracija
+
     @staticmethod
     def registracija(uporabnisko_ime, geslo_v_cistopisu):
         if Uporabnik.iz_datoteke(uporabnisko_ime) is not None:
@@ -156,6 +181,7 @@ class Uporabnik:
             uporabnik.v_datoteko()
             return uporabnik
 
+
     def _zasifriraj_geslo(geslo_v_cistopisu, sol=None):
         if sol is None:
             sol = str(random.getrandbits(32))
@@ -164,16 +190,20 @@ class Uporabnik:
         h.update(posoljeno_geslo.encode(encoding="utf-8"))
         return f"{sol}${h.hexdigest()}"
 
-    def preveri_geslo(self, geslo_v_cistopisu):
-        sol, _ = self.zasifrirano_geslo.split("$")
-        return self.zasifrirano_geslo == Uporabnik._zasifriraj_geslo(geslo_v_cistopisu, sol)
 
+    def v_datoteko(self):
+        with open(
+            Uporabnik.ime_uporabnikove_datoteke(self.uporabnisko_ime), "w", encoding="utf-8"
+        ) as datoteka:
+            json.dump(self.v_slovar(), datoteka, ensure_ascii=False, indent=4)
+
+    #slovar
 
     def v_slovar(self):
         return {
             "uporabnisko_ime": self.uporabnisko_ime,
             "zasifrirano_geslo": self.zasifrirano_geslo,
-            "zvezek": self.zvezek.v_slovar(),
+            "zvezek": self.zvezek.v_slovar()
         }
 
     @staticmethod
@@ -184,21 +214,5 @@ class Uporabnik:
         return Uporabnik(uporabnisko_ime, zasifrirano_geslo, zvezek)
 
 
-    @staticmethod
-    def ime_uporabnikove_datoteke(uporabnisko_ime):
-        return f"{uporabnisko_ime}.json"
 
-    def v_datoteko(self):
-        with open(
-            Uporabnik.ime_uporabnikove_datoteke(self.uporabnisko_ime), "w", encoding="utf-8"
-        ) as datoteka:
-            json.dump(self.v_slovar(), datoteka, ensure_ascii=False, indent=4)
 
-    @staticmethod
-    def iz_datoteke(uporabnisko_ime):
-        try:
-            with open(Uporabnik.ime_uporabnikove_datoteke(uporabnisko_ime)) as datoteka:
-                slovar = json.load(datoteka)
-                return Uporabnik.iz_slovarja(slovar)
-        except FileNotFoundError:
-            return None
