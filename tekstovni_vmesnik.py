@@ -15,10 +15,10 @@ def prikaz_stopnje(stopnja):
     return f"{stopnja.ime}"
 
 def prikaz_programa(program):
-    return f"{program.ime}, {program.stopnja}"
+    return f"{program.ime} za {program.stopnja}"
 
 def prikaz_vaje(vaja):
-    return f"{vaja.ime}, {vaja.kategorija} iz {vaja.program}"
+    return f"{vaja.ime} iz {vaja.program}: {vaja.kategorija}, {vaja.opis}, {vaja.glasba}, {vaja.posnetek}"
 
 # Pomožne funkcije za vnos
 
@@ -107,7 +107,7 @@ def dodaj_vajo():
     #print("Dodaj posnetek: ")
     #posnetek = input("Posnetek> ")
     nova_vaja = Vaja(ime, kategorija, program)
-    program.dodaj_vajo(nova_vaja)
+    zvezek.dodaj_vajo(nova_vaja)
     print(f"Vaja {ime} je uspešno dodana.")
 
 def odstrani_vajo():
