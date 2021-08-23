@@ -6,77 +6,89 @@ import random
 class Zvezek:
     def __init__(self):
         self.stopnje = []
-        self.razredi = []
-#        self._stopnje_po_imenih = {}
-#        self._razredi_po_imenih = {None: None}
-#        self._prelivi_po_racunih = {}
-#        self._prelivi_po_kuvertah = {None: []}
+        self.programi = []
+        self.vaje = []
 
 
-    def nova_stopnja(self, ime_stopnje):
-        if ime_stopnje in self._stopnje_po_imenih:
-            raise ValueError("Stopnja z tem imenom že obstaja!")
-        else:
-            nova = Stopnja(ime_stopnje)
-            self.stopnje.append(nova)
-            self._stopnje_po_imenih[ime_stopnje] = nova
-            self._programi_po_stopnjah[nova] = []
+    def dodaj_stopnjo(self, ime_stopnje):
+        nova = Stopnja(ime_stopnje)
+        self.stopnje.append(nova)
 
     def odstrani_stopnjo(self, stopnja):
-        for program in stopnja.programi():
-            program.stopnja = None
-            self._programi_po_stopnjah[None].append(program)
-        self.kuverte.remove(stopnja)
-        del self._programi_po_stopnjah[stopnja]
+        self.stopnje.remove(stopnja)
 
 
-    def nov_razred(self, ime_razreda):
-            if ime_razreda in self._razredi_po_imenih:
-                raise ValueError("Razred z tem imenom že obstaja!")
-            else:
-                nov = Razred(ime_razreda)
-                self.razredi.append(nov)
-                self._razredi_po_imenih[ime_razreda] = nov
+    def dodaj_program(self, ime, stopnja):
+        nov = Program(ime, stopnja)
+        self.programi.append(nov)
 
-    def odstrani_razred(self, razred):
-        self.razredi.remove(razred)
+    def odstrani_program(self, program):
+        self.programi.remove(program)
+
+
+    def dodaj_vajo(self, ime, program, kategorija, opis="", glasba=None, posnetek=None):
+        nova = Vaja(ime, program, kategorija, opis, glasba, posnetek)
+        self.vaje.append(nova)
+
+    def odstrani_vajo(self, vaja):
+        self.vaje.remove(vaja)
+
+
 
     def v_slovar(self):
-        return{
+        return {
             "stopnje": [
                 {
-                    "ime stopnje": stopnja.ime,
-                    "programi na stopnji": [program.v_slovar() for program in stopnja.programi]
+                    "ime_stopnje": stopnja.ime,
                 }
-            
                 for stopnja in self.stopnje
             ],
-            "razredi": [{ "razred" : razred.ime, "ucitelj": razred.ucitelj} for razred in self.razredi]
+            "programi": [
+                {
+                    "ime_programa" : program.ime,
+                    "stopnja_programa": program.stopnja,
+                }
+                for program in self.programi
+            ],
+            "vaje": [
+                {
+                    "ime_vaje": vaja.ime,
+                    "iz_programa": vaja.program,
+                    "kategorija_vaje": vaja.kategorija,
+                    "opis": vaja.opis,
+                    "glasba": vaja.glasba,
+                    "posnetek": vaja.posnetek
+                }
+                for vaja in self.vaje
+            ],
         }
 
     @classmethod
     def iz_slovarja(cls, slovar):
         zvezek = cls()
         for stopnja in slovar["stopnje"]:
-            nova_stopnja = zvezek.nova_stopnja(
-                stopnja["ime"]
-            )
-        for razred in slovar["stopnje"]:
-            nov_razred = zvezek.nov_razred(
-                razred["razred"],
-                razred["ucitelj"]
+            zvezek.dodaj_stopnjo(stopnja["ime_stopnje"])
+        for program in slovar["programi"]:
+            zvezek.dodaj_program(program["ime_programa"], program["stopnja_programa"])
+        for vaja in slovar["vaje"]:
+            zvezek.dodaj_vajo(
+                vaja["ime_vaje"],
+                vaja["iz_programa"],
+                vaja["kategorija_vaje"],
+                vaja["opis"],
+                vaja["glasba"],
+                vaja["posnetek"]
             )
         return zvezek
 
 
-
     def shrani_stanje(self, ime_datoteke):
-        with open(ime_datoteke, "w", encoding="utf-8") as datoteka:
+        with open(ime_datoteke, "w") as datoteka:
             json.dump(self.slovar(), datoteka, ensure_ascii=False, indent=4)
 
     @classmethod
     def nalozi_stanje(cls, ime_datoteke):
-        with open(ime_datoteke, encoding="utf-8") as datoteka:
+        with open(ime_datoteke) as datoteka:
             slovar = json.load(datoteka)
         return cls.iz_slovarja(slovar)
 
@@ -88,86 +100,33 @@ class Zvezek:
 
 
 class Stopnja:
-    def __init__(self, ime):
+    def __init__(self, ime, zvezek):
         self.ime = ime
-        self.programi = []
-
-    def dodaj_program(self, program):
-        self.programi.append(program)
-
-    def odstrani_program(self, program):
-        self.programi.remove(program)
-
-
-
+        self.zvezek = zvezek
 
 
 
 class Program:
-    def __init__(self, ime, stopnja):
+    def __init__(self, ime, stopnja, zvezek):
         self.ime = ime
         self.stopnja = stopnja
-        self.vaje = []
-
-    def dodaj_vajo(self, vaja):
-        self.vaje.append(vaja)
-
-    def odstrani_vajo(self, vaja):
-        self.vaje.remove(vaja)
-
-    def v_slovar(self):
-        return {
-            "ime programa": self.ime,
-            "stopnja programa": self.stopnja,
-            "vaje v programu": [vaja.v_slovar() for vaja in self.vaje] 
-        }
-
-    @staticmethod
-    def iz_slovarja(slovar):
-        return Program(
-            slovar["ime programa"],
-            slovar["stopnja programa"]
-        )
-
-
-
-
-
+        self.zvezek = zvezek
 
 
 class Vaja:
-    def __init__(self, ime, kategorija, program, glasba=None, posnetek=None):
+
+    def __init__(self, ime, program, kategorija, opis="", glasba=None, posnetek=None):
         self.ime = ime
-        self.kategorija = kategorija
         self.program = program
+        self.kategorija = kategorija
+        self.opis = opis
         self.glasba = glasba
         self.posnetek = posnetek
-
-    def v_slovar(self):
-        return {
-            "ime_vaje": self.ime,
-            "kategorija": self.kategorija,
-            "program": self.program,
-            "glasba": self.glasba,
-            "posnetek": self.posnetek
-        }
-
-    @staticmethod
-    def iz_slovarja(slovar):
-        return Vaja(
-            slovar["ime_vaje"],
-            slovar["kategorija"],
-            slovar["program"],
-            slovar["glasba"],
-            slovar["posnetek"]
-        )
+        
 
 
-
-
-
-
-
+#############################################################################
+#UPORABNIK
 
 
 
