@@ -7,6 +7,10 @@ class Zvezek:
     def __init__(self):
         self.stopnje = []
         self.razredi = []
+#        self._stopnje_po_imenih = {}
+#        self._razredi_po_imenih = {None: None}
+#        self._prelivi_po_racunih = {}
+#        self._prelivi_po_kuvertah = {None: []}
 
 
     def nova_stopnja(self, ime_stopnje):
@@ -16,16 +20,14 @@ class Zvezek:
             nova = Stopnja(ime_stopnje)
             self.stopnje.append(nova)
             self._stopnje_po_imenih[ime_stopnje] = nova
-            self._programi_po_imenih[nova] = []
+            self._programi_po_stopnjah[nova] = []
 
     def odstrani_stopnjo(self, stopnja):
-        self._preveri_stopnjo(stopnja)
         for program in stopnja.programi():
             program.stopnja = None
             self._programi_po_stopnjah[None].append(program)
         self.kuverte.remove(stopnja)
         del self._programi_po_stopnjah[stopnja]
-    
 
 
     def nov_razred(self, ime_razreda):
@@ -38,8 +40,6 @@ class Zvezek:
 
     def odstrani_razred(self, razred):
         self.razredi.remove(razred)
-
-
 
     def v_slovar(self):
         return{
@@ -69,6 +69,24 @@ class Zvezek:
         return zvezek
 
 
+
+    def shrani_stanje(self, ime_datoteke):
+        with open(ime_datoteke, "w", encoding="utf-8") as datoteka:
+            json.dump(self.slovar(), datoteka, ensure_ascii=False, indent=4)
+
+    @classmethod
+    def nalozi_stanje(cls, ime_datoteke):
+        with open(ime_datoteke, encoding="utf-8") as datoteka:
+            slovar = json.load(datoteka)
+        return cls.iz_slovarja(slovar)
+
+
+
+
+
+
+
+
 class Stopnja:
     def __init__(self, ime):
         self.ime = ime
@@ -79,6 +97,10 @@ class Stopnja:
 
     def odstrani_program(self, program):
         self.programi.remove(program)
+
+
+
+
 
 
 class Program:
@@ -106,6 +128,11 @@ class Program:
             slovar["ime programa"],
             slovar["stopnja programa"]
         )
+
+
+
+
+
 
 
 class Vaja:
@@ -136,10 +163,12 @@ class Vaja:
         )
 
 
-class Razred:
-    def __init__(self, ime, ucitelj):
-        self.ime = ime
-        self.ucitelj = ucitelj
+
+
+
+
+
+
 
 
 class Uporabnik:
@@ -147,40 +176,39 @@ class Uporabnik:
         self.uporabnisko_ime = uporabnisko_ime
         self.zasifrirano_geslo = zasifrirano_geslo
         self.zvezek = zvezek
-#    
-#    @staticmethod
-#    def prijava(uporabnisko_ime, geslo_v_cistopisu):
-#        uporabnik = Uporabnik.iz_datoteke(uporabnisko_ime)
-#        if uporabnik is None:
-#            raise ValueError("Uporabniško ime ne obstaja")
-#        elif uporabnik.preveri_geslo(geslo_v_cistopisu):
-#            return uporabnik        
-#        else:
-#            raise ValueError("Geslo je napačno")
-#
-#    @staticmethod
-#    def registracija(uporabnisko_ime, geslo_v_cistopisu):
-#        if Uporabnik.iz_datoteke(uporabnisko_ime) is not None:
-#            raise ValueError("Uporabniško ime že obstaja")
-#        else:
-#            zasifrirano_geslo = Uporabnik._zasifriraj_geslo(geslo_v_cistopisu)
-#            uporabnik = Uporabnik(uporabnisko_ime, zasifrirano_geslo, Model())
-#            uporabnik.v_datoteko()
-#            return uporabnik
-#
-#    def _zasifriraj_geslo(geslo_v_cistopisu, sol=None):
-#        if sol is None:
-#            sol = str(random.getrandbits(32))
-#        posoljeno_geslo = sol + geslo_v_cistopisu
-#        h = hashlib.blake2b()
-#        h.update(posoljeno_geslo.encode(encoding="utf-8"))
-#        return f"{sol}${h.hexdigest()}"
+    
+    @staticmethod
+    def prijava(uporabnisko_ime, geslo_v_cistopisu):
+        uporabnik = Uporabnik.iz_datoteke(uporabnisko_ime)
+        if uporabnik is None:
+            raise ValueError("Uporabniško ime ne obstaja")
+        elif uporabnik.preveri_geslo(geslo_v_cistopisu):
+            return uporabnik        
+        else:
+            raise ValueError("Geslo je napačno")
 
+    @staticmethod
+    def registracija(uporabnisko_ime, geslo_v_cistopisu):
+        if Uporabnik.iz_datoteke(uporabnisko_ime) is not None:
+            raise ValueError("Uporabniško ime že obstaja")
+        else:
+            zasifrirano_geslo = Uporabnik._zasifriraj_geslo(geslo_v_cistopisu)
+            uporabnik = Uporabnik(uporabnisko_ime, zasifrirano_geslo, Zvezek())
+            uporabnik.v_datoteko()
+            return uporabnik
 
-#    def preveri_geslo(self, geslo_v_cistopisu):
-#        sol, _ = self.zasifrirano_geslo.split("$")
-#        return self.zasifrirano_geslo == Uporabnik._zasifriraj_geslo(geslo_v_cistopisu, sol)
-#
+    def _zasifriraj_geslo(geslo_v_cistopisu, sol=None):
+        if sol is None:
+            sol = str(random.getrandbits(32))
+        posoljeno_geslo = sol + geslo_v_cistopisu
+        h = hashlib.blake2b()
+        h.update(posoljeno_geslo.encode(encoding="utf-8"))
+        return f"{sol}${h.hexdigest()}"
+
+    def preveri_geslo(self, geslo_v_cistopisu):
+        sol, _ = self.zasifrirano_geslo.split("$")
+        return self.zasifrirano_geslo == Uporabnik._zasifriraj_geslo(geslo_v_cistopisu, sol)
+
 
     def v_slovar(self):
         return {
@@ -193,8 +221,8 @@ class Uporabnik:
     def iz_slovarja(slovar):
         uporabnisko_ime = slovar["uporabnisko_ime"]
         zasifrirano_geslo = slovar["zasifrirano_geslo"]
-        proracun = Zvezek.iz_slovarja(slovar["proracun"])
-        return Uporabnik(uporabnisko_ime, zasifrirano_geslo, proracun)
+        zvezek = Zvezek.iz_slovarja(slovar["zvezek"])
+        return Uporabnik(uporabnisko_ime, zasifrirano_geslo, zvezek)
 
 
     @staticmethod
@@ -203,7 +231,7 @@ class Uporabnik:
 
     def v_datoteko(self):
         with open(
-            Uporabnik.ime_uporabnikove_datoteke(self.uporabnisko_ime), "w"
+            Uporabnik.ime_uporabnikove_datoteke(self.uporabnisko_ime), "w", encoding="utf-8"
         ) as datoteka:
             json.dump(self.v_slovar(), datoteka, ensure_ascii=False, indent=4)
 
