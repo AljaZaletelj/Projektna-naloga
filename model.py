@@ -84,19 +84,13 @@ class Zvezek:
 
     def shrani_stanje(self, ime_datoteke):
         with open(ime_datoteke, "w") as datoteka:
-            json.dump(self.slovar(), datoteka, ensure_ascii=False, indent=4)
+            json.dump(self.v_slovar(), datoteka, ensure_ascii=False, indent=4)
 
     @classmethod
     def nalozi_stanje(cls, ime_datoteke):
         with open(ime_datoteke) as datoteka:
             slovar = json.load(datoteka)
         return cls.iz_slovarja(slovar)
-
-
-
-
-
-
 
 
 class Stopnja:
@@ -131,7 +125,8 @@ class Vaja:
 
 
 class Uporabnik:
-    def __init__(self, uporabnisko_ime, zasifrirano_geslo, zvezek):
+    def __init__(self, ime, uporabnisko_ime, zasifrirano_geslo, zvezek):
+        self.ime = ime
         self.uporabnisko_ime = uporabnisko_ime
         self.zasifrirano_geslo = zasifrirano_geslo
         self.zvezek = zvezek
@@ -172,12 +167,12 @@ class Uporabnik:
     #registracija
 
     @staticmethod
-    def registracija(uporabnisko_ime, geslo_v_cistopisu):
+    def registracija(ime, uporabnisko_ime, geslo_v_cistopisu):
         if Uporabnik.iz_datoteke(uporabnisko_ime) is not None:
             raise ValueError("Uporabniško ime že obstaja")
         else:
             zasifrirano_geslo = Uporabnik._zasifriraj_geslo(geslo_v_cistopisu)
-            uporabnik = Uporabnik(uporabnisko_ime, zasifrirano_geslo, Zvezek())
+            uporabnik = Uporabnik(ime, uporabnisko_ime, zasifrirano_geslo, Zvezek())
             uporabnik.v_datoteko()
             return uporabnik
 
@@ -201,6 +196,7 @@ class Uporabnik:
 
     def v_slovar(self):
         return {
+            "ime": self.ime,
             "uporabnisko_ime": self.uporabnisko_ime,
             "zasifrirano_geslo": self.zasifrirano_geslo,
             "zvezek": self.zvezek.v_slovar()
@@ -208,10 +204,11 @@ class Uporabnik:
 
     @staticmethod
     def iz_slovarja(slovar):
+        ime = slovar["ime"]
         uporabnisko_ime = slovar["uporabnisko_ime"]
         zasifrirano_geslo = slovar["zasifrirano_geslo"]
         zvezek = Zvezek.iz_slovarja(slovar["zvezek"])
-        return Uporabnik(uporabnisko_ime, zasifrirano_geslo, zvezek)
+        return Uporabnik(ime, uporabnisko_ime, zasifrirano_geslo, zvezek)
 
 
 
