@@ -4,6 +4,21 @@
   <div class="block">
     <h1>Tvoji razredi:</h1>
   </div>
-  <button class="button is-medium is-rounded">1.razred</button>
-  <button class="button is-medium is-rounded">3.razred</button>
+  %for stopnja in zvezek.stopnje:
+  <a class="button is-medium is-rounded" href="/{{stopnja.ime}}/">{{stopnja.ime}}</a>
+  %end
+
+  <div class="panel-block">
+    <form action="/dodaj-stopnjo/" method="POST">
+      <div class="field has-addons">
+        <div class="control">
+          <input class="input is-small" type="text" placeholder="ime stopnje" name="ime">
+        </div>
+        <div class="control">
+          <input type="submit" class="button is-small" value="dodaj">
+        </div>
+      </div>
+    </form>
+  </div>
+
 </div>
