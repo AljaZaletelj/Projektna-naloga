@@ -8,12 +8,6 @@ SKRIVNOST = "to je ena skrivnost"
 #######################################################################
 #UPORBANIK
 
-
-def poisci_racun(zvezek, ime_polja):
-    ime_racuna = bottle.request.forms.getunicode(ime_polja)
-    return zvezek.poisci_racun(ime_racuna)
-
-
 def trenutni_uporabnik():
     uporabnisko_ime = bottle.request.get_cookie(
         PISKOTEK_UPORABNISKO_IME, secret=SKRIVNOST
@@ -94,11 +88,12 @@ def osnovna_stran():
 def dodaj_stopnjo():
     uporabnik = trenutni_uporabnik()
     ime = bottle.request.forms.getunicode("ime")
-    uporabnik.zvezek.dodaj_stopnjo(ime)
+    zvezek = uporabnik.zvezek
+    uporabnik.zvezek.dodaj_stopnjo(ime, zvezek)
     shrani_stanje(uporabnik)
     bottle.redirect("/")
 
-@bottle.post("/odstrani-stopnjo")
+@bottle.post("/odstrani-stopnjo/")
 def odstrani_stopnjo():
     pass
 
@@ -108,10 +103,35 @@ def ogled_stopnje(ime_stopnje):
     pass
 
 
+#@bottle.post("/dodaj-program/")
+#def dodaj_program(program):
+#    uporabnik = trenutni_uporabnik()
+#    ime = bottle.request.forms.getunicode("ime")
+#    stopnja = trenutna_stopnja()
+#    zvezek = uporabnik.zvezek
+#    uporabnik.dodaj_program(ime, stopnja, zvezek)
 
-@bottle.post("/dodaj-program")
-def dodaj_program(program):
+
+@bottle.post("/odstrani-prorgam/")
+def odstrani_program(program):
     pass
+
+
+#premakni_program
+#
+#ogled_programa
+#
+#dodaj_vajo
+#
+#odstrani_vajo
+#
+#premakni_vajo
+#
+#uredi_vajo
+
+@bottle.get("/pomoc/")
+def pomoc():
+    return bottle.template("pomoc.html")
 
 
 bottle.run(debug=True, reloader=True)
