@@ -39,14 +39,14 @@ class Zvezek:
         return {
             "stopnje": [
                 {
-                    "ime_stopnje": stopnja.ime,
+                    "ime_stopnje": stopnja.ime
                 }
                 for stopnja in self.stopnje
             ],
             "programi": [
                 {
                     "ime_programa" : program.ime,
-                    "stopnja_programa": program.stopnja,
+                    "stopnja_programa": program.stopnja
                 }
                 for program in self.programi
             ],
@@ -94,17 +94,19 @@ class Zvezek:
 
 
 class Stopnja:
-    def __init__(self, ime, zvezek):
+    def __init__(self, ime):
         self.ime = ime
-        self.zvezek = zvezek
+ #       self.zvezek = zvezek
+ #       self.programi = [program for program in zvezek.programi if program.stopnja == self.ime]
 
 
 
 class Program:
-    def __init__(self, ime, stopnja, zvezek):
+    def __init__(self, ime, stopnja):
         self.ime = ime
         self.stopnja = stopnja
-        self.zvezek = zvezek
+#        self.zvezek = zvezek
+ #       self.vaje = [vaja for vaja in zvezek.vaje if vaja.program == self.ime]
 
 
 class Vaja:
