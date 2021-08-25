@@ -1,24 +1,54 @@
 % rebase('base.html')
 
 <div class="notification is-primary has-background-info-light has-text-info">
-  <div class="block">
-    <h1>Tvoji razredi:</h1>
-  </div>
-  %for stopnja in zvezek.stopnje:
-  <a class="button is-medium is-rounded" href="/{{stopnja.ime}}/">{{stopnja.ime}}</a>
-  %end
 
-  <div class="panel-block">
-    <form action="/dodaj-stopnjo/" method="POST">
-      <div class="field has-addons">
-        <div class="control">
-          <input class="input is-small" type="text" placeholder="ime stopnje" name="ime">
-        </div>
-        <div class="control">
-          <input type="submit" class="button is-small" value="dodaj">
+  <div class="box">
+    <p><h1>Tvoji razredi:</h1></p>
+    %for stopnja in zvezek.stopnje:
+    <a class="button is-medium is-rounded" href="/{{stopnja.ime}}/">{{stopnja.ime}}</a>
+    %end
+  </div>
+
+  <div class="box">
+
+    <div class="columns">
+
+      <div class="column">
+        <p><h3>Dodaj stopnjo:</h3></b>
+        <div class="panel-block">
+          <form action="/dodaj-stopnjo/" method="POST">
+            <div class="field has-addons">
+              <div class="control">
+                <input class="input is-small" type="text" placeholder="ime stopnje" name="ime">
+              </div>
+              <div class="control">
+                <input type="submit" class="button is-small" value="dodaj">
+              </div>
+            </div>
+          </form>
         </div>
       </div>
-    </form>
+
+      <div class="column">
+        <p><h3>Odstrani stopnjo:</h3></p>
+        <div class="select is-small">
+          <form action="/odstrani-stopnjo/" method="POST">
+            <select  name="ime">
+              %for stopnja in zvezek.stopnje:
+              <option>{{stopnja.ime}}</option>
+              %end
+            </select>
+            <div class="control">
+              <input type="submit" class="button is-small" value="odstrani">
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+
+    
   </div>
 
 </div>
+  
