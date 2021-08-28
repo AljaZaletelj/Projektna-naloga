@@ -1,5 +1,5 @@
 import bottle
-from model import Uporabnik, Zvezek, Stopnja, Program, Vaja
+from model import Uporabnik, Zvezek
 
 PISKOTEK_UPORABNISKO_IME = "uporabnisko_ime"
 SKRIVNOST = "to je ena skrivnost"
@@ -13,15 +13,13 @@ def trenutni_uporabnik():
         PISKOTEK_UPORABNISKO_IME, secret=SKRIVNOST
     )
     if uporabnisko_ime:
-        return podatki_uporabnika(uporabnisko_ime)
+        return Uporabnik.iz_datoteke(uporabnisko_ime)
+
     else:
         bottle.redirect("/prijava/")
 
 def shrani_stanje(uporabnik):
-    return uporabnik.v_datoteko()
-
-def podatki_uporabnika(uporabnisko_ime):
-    return Uporabnik.iz_datoteke(uporabnisko_ime)
+    uporabnik.v_datoteko()
 
 
 @bottle.get("/registracija/")
@@ -84,32 +82,36 @@ def osnovna_stran():
     return bottle.template(
         "osnovna_stran.html", zvezek = uporabnik.zvezek, uporabnik = uporabnik)
 
-@bottle.post("/dodaj-stopnjo/")
+@bottle.post("/dodaj_stopnjo/")
 def dodaj_stopnjo():
     uporabnik = trenutni_uporabnik()
-    ime = bottle.request.forms.getunicode("ime")
-    zvezek = uporabnik.zvezek
-    uporabnik.zvezek.dodaj_stopnjo(ime, zvezek)
+    ime_stopnje = bottle.request.forms["ime_stopnje"]
+    uporabnik.zvezek.dodaj_stopnjo(ime_stopnje)
     shrani_stanje(uporabnik)
     bottle.redirect("/")
 
-@bottle.post("/odstrani-stopnjo/")
+@bottle.post("/odstrani_stopnjo/")
 def odstrani_stopnjo():
     pass
 
 
 @bottle.get("/<ime_stopnje>/")
 def ogled_stopnje(ime_stopnje):
-    pass
+    uporabnik = trenutni_uporabnik()
+    for stopnja in uporabnik.zvezek.stopnje:
+        if stopnja.ime == ime_stopnje:
+            trenutna_stopnja = stopnja
+    return bottle.template("ogled_stopnje.html", stopnja = trenutna_stopnja, programi = uporabnik.zvezek.programi_na_stopnji(trenutna_stopnja))
 
 
-#@bottle.post("/dodaj-program/")
-#def dodaj_program(program):
-#    uporabnik = trenutni_uporabnik()
-#    ime = bottle.request.forms.getunicode("ime")
-#    stopnja = trenutna_stopnja()
-#    zvezek = uporabnik.zvezek
-#    uporabnik.dodaj_program(ime, stopnja, zvezek)
+@bottle.post("/<ime_stopnje>/dodaj-program/")
+def dodaj_program(ime_stopnje):
+    uporabnik = trenutni_uporabnik()
+    for stopnja in uporabnik.zvezek.stopnje:
+        if stopnja.ime == ime_stopnje:
+            trenutna_stopnja = stopnja
+    ime = bottle.request.forms["ime_programa"]
+    uporabnik.dodaj_program(ime, stopnja)
 
 
 @bottle.post("/odstrani-prorgam/")
@@ -128,6 +130,7 @@ def odstrani_program(program):
 #premakni_vajo
 #
 #uredi_vajo
+
 
 @bottle.get("/pomoc/")
 def pomoc():
