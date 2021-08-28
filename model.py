@@ -2,6 +2,12 @@ import hashlib
 import json
 import random
 
+#UPORABNIK: ime, up.ime, geslo, zvezek
+#ZVEZEK: stopnje, programi, vaje
+#STOPNJA: ime
+#PROGRAM: ime, stopnja
+#VAJA: ime, program, kategorija, opis, glasba, posnetek
+
 
 class Zvezek:
     def __init__(self):
@@ -9,10 +15,12 @@ class Zvezek:
         self.programi = []
         self.vaje = []
 
-
     def dodaj_stopnjo(self, ime_stopnje):
-        nova = Stopnja(ime_stopnje)
-        self.stopnje.append(nova)
+        if ime_stopnje in self.stopnje:
+            pass
+        else:
+            nova = Stopnja(ime_stopnje)
+            self.stopnje.append(nova)
 
     def odstrani_stopnjo(self, stopnja):
         self.stopnje.remove(stopnja)
@@ -32,6 +40,20 @@ class Zvezek:
 
     def odstrani_vajo(self, vaja):
         self.vaje.remove(vaja)
+
+    def programi_na_stopnji(self, stopnja):
+        programi_na_stopnji = []
+        for program in self.programi:
+            if program.stopnja == stopnja.ime:
+                programi_na_stopnji.append(program)
+        return programi_na_stopnji
+
+    def vaje_v_programu(self, program):
+        vaje_v_programu = []
+        for vaja in self.vaje:
+            if vaja.program == program.ime:
+                vaje_v_programu.append(vaja)
+        return vaje_v_programu
 
 
 
@@ -64,13 +86,13 @@ class Zvezek:
         }
 
     @classmethod
-    def iz_slovarja(cls, slovar):
+    def iz_slovarja(cls, slovar_s_stanjem):
         zvezek = cls()
-        for stopnja in slovar["stopnje"]:
+        for stopnja in slovar_s_stanjem["stopnje"]:
             zvezek.dodaj_stopnjo(stopnja["ime_stopnje"])
-        for program in slovar["programi"]:
+        for program in slovar_s_stanjem["programi"]:
             zvezek.dodaj_program(program["ime_programa"], program["stopnja_programa"])
-        for vaja in slovar["vaje"]:
+        for vaja in slovar_s_stanjem["vaje"]:
             zvezek.dodaj_vajo(
                 vaja["ime_vaje"],
                 vaja["iz_programa"],
@@ -83,31 +105,25 @@ class Zvezek:
 
 
     def shrani_stanje(self, ime_datoteke):
-        with open(ime_datoteke, "w") as datoteka:
+        with open(ime_datoteke, "w", encoding="utf-8") as datoteka:
             json.dump(self.v_slovar(), datoteka, ensure_ascii=False, indent=4)
 
     @classmethod
     def nalozi_stanje(cls, ime_datoteke):
         with open(ime_datoteke) as datoteka:
-            slovar = json.load(datoteka)
-        return cls.iz_slovarja(slovar)
+            slovar_s_stanjem = json.load(datoteka)
+        return cls.iz_slovarja(slovar_s_stanjem)
 
 
 class Stopnja:
     def __init__(self, ime):
         self.ime = ime
- #       self.zvezek = zvezek
- #       self.programi = [program for program in zvezek.programi if program.stopnja == self.ime]
-
 
 
 class Program:
     def __init__(self, ime, stopnja):
         self.ime = ime
         self.stopnja = stopnja
-#        self.zvezek = zvezek
- #       self.vaje = [vaja for vaja in zvezek.vaje if vaja.program == self.ime]
-
 
 class Vaja:
 
@@ -167,7 +183,7 @@ class Uporabnik:
 
 
     #registracija
-
+ 
     @staticmethod
     def registracija(ime, uporabnisko_ime, geslo_v_cistopisu):
         if Uporabnik.iz_datoteke(uporabnisko_ime) is not None:
