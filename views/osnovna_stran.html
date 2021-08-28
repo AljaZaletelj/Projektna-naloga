@@ -16,15 +16,9 @@
       <div class="column">
         <p><h3>Dodaj stopnjo:</h3></b>
         <div class="panel-block">
-          <form action="/dodaj-stopnjo/" method="POST">
-            <div class="field has-addons">
-              <div class="control">
-                <input class="input is-small" type="text" placeholder="ime stopnje" name="ime">
-              </div>
-              <div class="control">
-                <input type="submit" class="button is-small" value="dodaj">
-              </div>
-            </div>
+          <form action="/dodaj_stopnjo/" method="POST">
+            ime stopnje: <input type="text" name="ime_stopnje">
+            <input type="submit" value="Dodaj!">
           </form>
         </div>
       </div>
@@ -32,8 +26,8 @@
       <div class="column">
         <p><h3>Odstrani stopnjo:</h3></p>
         <div class="select is-small">
-          <form action="/odstrani-stopnjo/" method="POST">
-            <select  name="ime">
+          <form action="/odstrani_stopnjo/" method="POST">
+            <select  name="ime_stopnje">
               %for stopnja in zvezek.stopnje:
               <option>{{stopnja.ime}}</option>
               %end
@@ -47,7 +41,6 @@
     </div>
 
 
-    
   </div>
 
 </div>
