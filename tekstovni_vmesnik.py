@@ -1,5 +1,5 @@
 from spletni_vmesnik import dodaj_stopnjo, odstrani_program, odstrani_stopnjo, prijava_get
-from model import Zvezek, Vaja, Stopnja, Program
+from model import Zvezek
 
 DATOTEKA_S_STANJEM = "stanje.json"
 
@@ -49,7 +49,7 @@ def prikaz_vaje(vaja):
 
 def izberi(seznam):
     for indeks, (oznaka, _) in enumerate(seznam, 1):
-        print(f"{indeks}) {oznaka}")
+            print(f"{indeks}) {oznaka}")
     while True:
         izbira = int(input("> "))
         if 1 <= izbira <= len(seznam):
@@ -68,34 +68,55 @@ def izberi_vajo(vaje):
     return izberi([(prikaz_vaje(vaja), vaja) for vaja in vaje])
 
 
+
 # Tekstovni vmesnik
+
+#def tekstovni_vmesnik():
+#    uvodni_pozdrav()
+#    while True:
+#        try:
+#            moznosti = [
+#                ("pogledal stopnje", pokazi_stopnje),
+#                ("dodal stopnjo", dodaj_stopnjo),
+#                ("odstranil stopnjo", odstrani_stopnjo),
+#                ("pogledal programe na stopnji", pokazi_programe_na_stopnji),
+#                ("dodal program", dodaj_program),
+#                ("odstranil program", odstrani_program),
+#                ("pogledal vaje v programu", pokazi_vaje_v_programu),
+#                ("dodal vajo", dodaj_vajo),
+#                ("odstranil_vajo", odstrani_vajo),
+#                ("premaknil vajo", premakni_vajo)
+#            ]
+#            print("Kaj bi radi naredili?")
+#            izbira = izberi(moznosti)
+#            izbira()
+#            print()
+#            zvezek.shrani_stanje(DATOTEKA_S_STANJEM)
+#        except ValueError as e:
+#            print(e.args[0])
+#        except KeyboardInterrupt:
+#            print("Nasvidenje!")
+#            return
 
 def tekstovni_vmesnik():
     uvodni_pozdrav()
-    while True:
-        try:
-            print("Kaj bi radi naredili?")
-            moznosti = [
-                ("pogledal stopnje", pokazi_stopnje),
-                ("dodal stopnjo", dodaj_stopnjo),
-                ("odstranil stopnjo", odstrani_stopnjo),
-                ("pogledal programe na stopnji", pokazi_programe_na_stopnji),
-                ("dodal program", dodaj_program),
-                ("odstranil program", odstrani_program),
-                ("pogledal vaje v programu", pokazi_vaje_v_programu),
-                ("dodal vajo", dodaj_vajo),
-                ("odstranil_vajo", odstrani_vajo),
-                ("premaknil vajo", premakni_vajo)
-            ]
-            izbira = izberi(moznosti)
-            izbira()
-            print()
-            zvezek.shrani_stanje(DATOTEKA_S_STANJEM)
-        except ValueError as e:
-            print(e.args[0])
-        except KeyboardInterrupt:
-            print("Nasvidenje!")
-            return
+    moznosti = [
+        ("pogledal stopnje", pokazi_stopnje),
+        ("dodal stopnjo", dodaj_stopnjo),
+        ("odstranil stopnjo", odstrani_stopnjo),
+        ("pogledal programe na stopnji", pokazi_programe_na_stopnji),
+        ("dodal program", dodaj_program),
+        ("odstranil program", odstrani_program),
+        ("pogledal vaje v programu", pokazi_vaje_v_programu),
+        ("dodal vajo", dodaj_vajo),
+        ("odstranil_vajo", odstrani_vajo),
+        ("premaknil vajo", premakni_vajo)
+    ]
+    print("Kaj bi radi naredili?")
+    izbira = izberi(moznosti)
+    izbira()
+    print()
+    zvezek.shrani_stanje(DATOTEKA_S_STANJEM)
 
 def uvodni_pozdrav():
     print("Pozdravljen!")
@@ -140,9 +161,8 @@ def dodaj_program():
     stopnja = input("> ")
     print("Vnesi ime programa:")
     ime = input("> ")
-    program = Program(ime, stopnja)
-    zvezek.dodaj_program(program)
-    print(f"Program {ime} je uspešno dodan!")
+    zvezek.dodaj_program(ime, stopnja)
+    print(f"Program je uspešno dodan!")
 
 def odstrani_program():
     print("Program za katero stopnjo bi rad odstranil?")
@@ -159,13 +179,12 @@ def pokazi_vaje_v_programu():
     print("Izberi stopnjo:")
     stopnja = izberi_stopnjo(zvezek.stopnje)
     print("Izberi program katerega vaje bi si rad ogledal:")
-    program = izberi_program(zvezek.programi_na_stopnji)
+    program = izberi_program(zvezek.programi_na_stopnji(stopnja))
     if len(zvezek.vaje_v_programu) == 0:
         print("V tem programu nimaš še nobenih vaj!")
     else:
         for vaja in zvezek.vaje_v_programu(program):
             print(prikaz_vaje(vaja))
-
 
 def dodaj_vajo():
     print("Izberi stopnjo:")
@@ -176,12 +195,13 @@ def dodaj_vajo():
     kategorija = input("Kategorija> ")
     print("Vnesi ime vaje: ")
     ime = input("Ime> ")
+    print("Dodaj opis vaje:")
+    opis = input("> ")
     print("Dodaj glasbo: ")
     glasba = input("Glasba> ")
     print("Dodaj posnetek: ")
     posnetek = input("Posnetek> ")
-    nova_vaja = Vaja(ime, kategorija, program, glasba, posnetek)
-    zvezek.dodaj_vajo(nova_vaja)
+    zvezek.dodaj_vajo(ime, program, kategorija, opis, glasba, posnetek)
     print(f"Vaja {ime} je uspešno dodana.")
 
 def odstrani_vajo():
