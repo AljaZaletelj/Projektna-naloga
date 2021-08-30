@@ -15,18 +15,22 @@ class Zvezek:
         self.programi = []
         self.vaje = []
 
+
     def dodaj_stopnjo(self, ime_stopnje):
-        if ime_stopnje in self.stopnje:
-            pass
-        else:
-            nova = Stopnja(ime_stopnje)
-            self.stopnje.append(nova)
+        for stopnja in self.stopnje:
+            if stopnja.ime == ime_stopnje:
+                raise ValueError("Stopnja s tem imenom že obstaja!")
+        nova = Stopnja(ime_stopnje)
+        self.stopnje.append(nova)
 
     def odstrani_stopnjo(self, stopnja):
         self.stopnje.remove(stopnja)
 
 
     def dodaj_program(self, ime, stopnja):
+  #      for program in self.programi_na_stopnji(stopnja):
+  #          if program.ime == ime:
+  #              raise ValueError("Program s tem imenom na tej stopnji že obstaja!")
         nov = Program(ime, stopnja)
         self.programi.append(nov)
 
@@ -35,6 +39,9 @@ class Zvezek:
 
 
     def dodaj_vajo(self, ime, program, kategorija, opis="", glasba=None, posnetek=None):
+ #       for vaja in self.vaje_v_programu(program):
+ #           if vaja.ime == ime:
+ #               raise ValueError("Vaja s tem imenom v tem programu že obstaja!")
         nova = Vaja(ime, program, kategorija, opis, glasba, posnetek)
         self.vaje.append(nova)
 
@@ -44,41 +51,55 @@ class Zvezek:
     def programi_na_stopnji(self, stopnja):
         programi_na_stopnji = []
         for program in self.programi:
-            if program.stopnja == stopnja.ime:
+            if program.stopnja == stopnja:
                 programi_na_stopnji.append(program)
         return programi_na_stopnji
 
     def vaje_v_programu(self, program):
         vaje_v_programu = []
         for vaja in self.vaje:
-            if vaja.program == program.ime:
+            if vaja.program == program:
                 vaje_v_programu.append(vaja)
         return vaje_v_programu
 
+    def najdi_stopnjo_po_imenu(self, ime_stopnje):
+        for stopnja in self.stopnje:
+            if stopnja.ime == ime_stopnje:
+                return stopnja
+
+    def najdi_program_po_imenu(self, ime_programa):
+        for program in self.programi:
+            if program.ime == ime_programa:
+                return program
+
+    def najdi_vajo_po_imenu(self, ime_vaje):
+        for vaja in self.vaje:
+            if vaja.ime == ime_vaje:
+                return vaja
 
 
     def v_slovar(self):
         return {
             "stopnje": [
                 {
-                    "ime_stopnje": stopnja.ime
+                    "ime_stopnje" : stopnja.ime
                 }
                 for stopnja in self.stopnje
             ],
             "programi": [
                 {
                     "ime_programa" : program.ime,
-                    "stopnja_programa": program.stopnja
+                    "ime_stopnje" : program.stopnja.ime
                 }
                 for program in self.programi
             ],
             "vaje": [
                 {
-                    "ime_vaje": vaja.ime,
-                    "iz_programa": vaja.program,
-                    "kategorija_vaje": vaja.kategorija,
+                    "ime_vaje" : vaja.ime,
+                    "iz_programa_po_imenu" : vaja.program.ime,
+                    "kategorija_vaje" : vaja.kategorija,
                     "opis": vaja.opis,
-                    "glasba": vaja.glasba,
+                    "glasba" : vaja.glasba,
                     "posnetek": vaja.posnetek
                 }
                 for vaja in self.vaje
@@ -91,11 +112,13 @@ class Zvezek:
         for stopnja in slovar_s_stanjem["stopnje"]:
             zvezek.dodaj_stopnjo(stopnja["ime_stopnje"])
         for program in slovar_s_stanjem["programi"]:
-            zvezek.dodaj_program(program["ime_programa"], program["stopnja_programa"])
+            stopnja = zvezek.najdi_stopnjo_po_imenu(program["ime_stopnje"])
+            zvezek.dodaj_program(program["ime_programa"], stopnja)
         for vaja in slovar_s_stanjem["vaje"]:
+            program = zvezek.najdi_program_po_imenu(vaja["iz_programa_po_imenu"])
             zvezek.dodaj_vajo(
                 vaja["ime_vaje"],
-                vaja["iz_programa"],
+                program,
                 vaja["kategorija_vaje"],
                 vaja["opis"],
                 vaja["glasba"],
@@ -143,6 +166,7 @@ class Vaja:
 
 
 class Uporabnik:
+
     def __init__(self, ime, uporabnisko_ime, zasifrirano_geslo, zvezek):
         self.ime = ime
         self.uporabnisko_ime = uporabnisko_ime
