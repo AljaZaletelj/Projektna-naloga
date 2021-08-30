@@ -1,0 +1,51 @@
+% rebase('base.html')
+
+<div class="notification is-primary has-background-info-light has-text-info">
+
+    <div class="box">
+      <p><h1>Vaje v programu {{program.ime}} na stopnji {{stopnja.ime}}:</h1></p>
+      %for vaja in vaje:
+      <a class="button is-medium is-rounded" href="/stopnja_{{stopnja.ime}}/program_{{program.ime}}/vaja_{{vaja.ime}}/">{{vaja.ime}}</a>
+      %end
+    </div>
+
+
+    <div class="box">
+      <div class="columns">
+  
+        <div class="column">
+          <p><h3>Dodaj vajo:</h3></b>
+          <div class="panel-block">
+            <form action="/stopnja_{{stopnja.ime}}/program_{{program.ime}}/dodaj-vajo/" method="POST">
+              ime vaje: <input type="text" name="ime_vaje">
+              kategorija: <input type="text" name="kategorija">
+              opis: <input type="text" name="opis">
+              glasba: <input type="text" name="glasba">
+              posnetek: <input type="text" name="posnetek">
+              <input type="submit" value="Dodaj!">
+            </form>
+          </div>
+        </div>
+
+  
+        <div class="column">
+          <p><h3>Odstrani vajo:</h3></p>
+            <div class="select is-small">
+                <form action="/stopnja_{{stopnja.ime}}/program_{{program.ime}}/odstrani-vajo/ method="POST">
+                  <select  name="ime_vaje">
+                    %for vaja in vaje:
+                    <option>{{vaja.ime}}</option>
+                    %end
+                  </select>
+                  <div class="control">
+                    <input type="submit" class="button is-small" value="odstrani">
+                  </div>
+                </form>
+              </div>
+
+        </div>
+
+      </div>
+    </div>
+
+  </div>

@@ -3,13 +3,10 @@
 <div class="notification is-primary has-background-info-light has-text-info">
 
     <div class="box">
-      <p><h1>Programi na stopnji:</h1></p>
-      <!--
-      %for program in zvezek.programi_na_stopnji(trenutna_stopnja):
-      <a class="button is-medium is-rounded" href="/{{program.ime}}/">{{program.ime}}</a>
+      <p><h1>Programi na stopnji {{ime_stopnje}}:</h1></p>
+      %for program in programi:
+      <a class="button is-medium is-rounded" href="/stopnja_{{stopnja.ime}}/program_{{program.ime}}/">{{program.ime}}</a>
       %end
-
-      -->
     </div>
 
 
@@ -19,7 +16,7 @@
         <div class="column">
           <p><h3>Dodaj stopnjo:</h3></b>
           <div class="panel-block">
-            <form action="/dodaj_program/" method="POST">
+            <form action="/stopnja_{{stopnja.ime}}/dodaj-program/" method="POST">
               ime programa: <input type="text" name="ime_programa">
               <input type="submit" value="Dodaj!">
             </form>
@@ -29,20 +26,22 @@
         <div class="column">
           <p><h3>Odstrani stopnjo:</h3></p>
           <div class="select is-small">
-            <!-- This is a comment
-            <form action="/odstrani_program/" method="POST">
-              <select  name="ime_programa">
-                %for program in zvezek.programi_na_stopnji(stopnja):
-                <option>{{program.ime}}</option>
-                %end
-              </select>
-              <div class="control">
-                <input type="submit" class="button is-small" value="odstrani">
-              </div>
-            </form>     -->
+            <div class="select is-small">
+              <form action="/stopnja_{{stopnja.ime}}/odstrani-program/" method="POST">
+                <select  name="ime_programa">
+                  %for program in programi:
+                  <option>{{program.ime}}</option>
+                  %end
+                </select>
+                <div class="control">
+                  <input type="submit" class="button is-small" value="odstrani">
+                </div>
+              </form>
+            </div>
           </div>
         </div>
+
       </div>
     </div>
 
-  </div>
+ </div>
