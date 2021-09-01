@@ -8,6 +8,7 @@ import random
 #PROGRAM: ime, stopnja
 #VAJA: ime, program, kategorija, opis, glasba, posnetek
 
+#Zvezek--------------------------------------------------------------------------------------------------------------
 
 class Zvezek:
     def __init__(self):
@@ -26,6 +27,7 @@ class Zvezek:
     def odstrani_stopnjo(self, stopnja):
         self.stopnje.remove(stopnja)
 
+    #dodajanje in odstranjevanje
 
     def dodaj_program(self, ime, stopnja):
   #      for program in self.programi_na_stopnji(stopnja):
@@ -48,6 +50,11 @@ class Zvezek:
     def odstrani_vajo(self, vaja):
         self.vaje.remove(vaja)
 
+
+
+
+    #kupckanje
+
     def programi_na_stopnji(self, stopnja):
         programi_na_stopnji = []
         for program in self.programi:
@@ -62,21 +69,30 @@ class Zvezek:
                 vaje_v_programu.append(vaja)
         return vaje_v_programu
 
+
+
+    #iskanje
+
     def najdi_stopnjo_po_imenu(self, ime_stopnje):
         for stopnja in self.stopnje:
             if stopnja.ime == ime_stopnje:
                 return stopnja
 
-    def najdi_program_po_imenu(self, ime_programa):
+
+    def najdi_program_iz_stopnje_po_imenu(self, ime_programa, stopnja):
+        unikatno_ime = f"{ime_programa} za {stopnja.ime}"
         for program in self.programi:
-            if program.ime == ime_programa:
+            if program.unikatno_ime_programa() == unikatno_ime:
                 return program
 
-    def najdi_vajo_po_imenu(self, ime_vaje):
+    def najdi_vajo_iz_programa_po_imenu(self, ime_vaje, program):
+        unikatno_ime = f"{ime_vaje} v {program.ime} za {program.stopnja.ime}"
         for vaja in self.vaje:
-            if vaja.ime == ime_vaje:
+            if vaja.unikatno_ime_vaje() == unikatno_ime:
                 return vaja
 
+
+    #zapisovanje v json
 
     def v_slovar(self):
         return {
@@ -96,7 +112,8 @@ class Zvezek:
             "vaje": [
                 {
                     "ime_vaje" : vaja.ime,
-                    "iz_programa_po_imenu" : vaja.program.ime,
+                    "ime_programa": vaja.program.ime,
+                    "ime_stopnje" : vaja.program.stopnja.ime,
                     "kategorija_vaje" : vaja.kategorija,
                     "opis": vaja.opis,
                     "glasba" : vaja.glasba,
@@ -115,7 +132,8 @@ class Zvezek:
             stopnja = zvezek.najdi_stopnjo_po_imenu(program["ime_stopnje"])
             zvezek.dodaj_program(program["ime_programa"], stopnja)
         for vaja in slovar_s_stanjem["vaje"]:
-            program = zvezek.najdi_program_po_imenu(vaja["iz_programa_po_imenu"])
+            stopnja = zvezek.najdi_stopnjo_po_imenu(vaja["ime_stopnje"])
+            program = zvezek.najdi_program_iz_stopnje_po_imenu(vaja["ime_programa"], stopnja)
             zvezek.dodaj_vajo(
                 vaja["ime_vaje"],
                 program,
@@ -138,6 +156,8 @@ class Zvezek:
         return cls.iz_slovarja(slovar_s_stanjem)
 
 
+#Stopnja, Program, Vaja -------------------------------------------------------------------------------
+ 
 class Stopnja:
     def __init__(self, ime):
         self.ime = ime
@@ -147,6 +167,9 @@ class Program:
     def __init__(self, ime, stopnja):
         self.ime = ime
         self.stopnja = stopnja
+
+    def unikatno_ime_programa(self):
+        return f"{self.ime} za {self.stopnja.ime}"
 
 class Vaja:
 
@@ -158,10 +181,18 @@ class Vaja:
         self.glasba = glasba
         self.posnetek = posnetek
 
+    def unikatno_ime_vaje(self):
+        return f"{self.ime} v {self.program.ime} za {self.program.stopnja.ime}"
+
+    def premakni_vajo(self, v_program):
+        self.program = v_program
 
 
-#############################################################################
-#UPORABNIK
+
+
+
+
+#UPORABNIK-----------------------------------------------------------------------------------------------------
 
 
 
