@@ -1,5 +1,5 @@
 # from spletni_vmesnik import dodaj_stopnjo, odstrani_program, odstrani_stopnjo, prijava_get
-from model import Zvezek
+from model import Zvezek, Program
 
 DATOTEKA_S_STANJEM = "stanje.json"
 
@@ -15,7 +15,7 @@ def prikaz_stopnje(stopnja):
     return f"{stopnja.ime}"
 
 def prikaz_programa(program):
-    return f"{program.ime} za {program.stopnja.ime}"
+    return f"{program.ime} na {program.stopnja.ime}"
 
 def prikaz_vaje(vaja):
     return f"{vaja.ime}: {vaja.kategorija}, {vaja.opis}, {vaja.glasba}, {vaja.posnetek}"
@@ -80,9 +80,7 @@ def tekstovni_vmesnik():
             ]
             print(20 * "-")
             print("Kaj bi radi naredili?")
-            izbira = izberi(moznosti) # lambda : (print("here"),izberi(moznosti))
-
-            #izbira() [1]()
+            izbira = izberi(moznosti)
             izbira()
             print("Shranjujem...")
             zvezek.shrani_stanje(DATOTEKA_S_STANJEM)
