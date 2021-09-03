@@ -1,15 +1,43 @@
 % rebase('base.html')
 
-<div class="box">
-    <p>ime vaje: {{vaja.ime}}</p>
-    <p>kategorija : {{vaja.kategorija}}</p>
-</div>
 
-<div class="box">
-    opis : <p>{{vaja.opis}}</p>
-</div>
+<div class="notification is-primary has-background-info-light has-text-info">
+    <div class="box">
+        <nav class="breadcrumb has-arrow-separator" aria-label="breadcrumbs">
+            <ul>
+              <li><a href="/">zvezek</a></li>
+              <li><a href="/stopnja_{{stopnja.ime}}/">{{stopnja.ime}}</a></li>
+              <li><a href="/stopnja_{{stopnja.ime}}/program_{{program.ime}}/">{{program.ime}}</a></li>
+              <li class="is-active"><a href="/stopnja_{{stopnja.ime}}/program_{{program.ime}}/vaja_{{vaja.ime}}/" aria-current="page">{{vaja.ime}}</a></li>
+            </ul>
+          </nav>
+    </div>
 
-<div class="box">
-    <p>glasba : {{vaja.glasba}}</p>
-    <p>posnetek : {{vaja.posnetek}}</p>
+    <div class="box">
+        <p>ime vaje: {{vaja.ime}}</p>
+        <p>kategorija : {{vaja.kategorija}}</p>
+    </div>
+
+    <div class="box">
+        opis : <p>{{vaja.opis}}</p>
+    </div>
+
+    <div class="box">
+        <p>glasba : {{vaja.glasba}}</p>
+        <p>posnetek : {{vaja.posnetek}}</p>
+    </div>
+
+    <div>
+        <audio controls>
+            <source src={{glasba}} type="audio/wav">
+        </audio>
+    </div>
+
+
+    <div>    
+        <video width="320" height="240" controls>
+            <source src={{posnetek}} type="video/mp4">
+        </video>
+    </div>
+
 </div>

@@ -3,6 +3,16 @@
 <div class="notification is-primary has-background-info-light has-text-info">
 
   <div class="box">
+    <nav class="breadcrumb has-arrow-separator" aria-label="breadcrumbs">
+        <ul>
+          <li><a href="/">zvezek</a></li>
+          <li><a href="/stopnja_{{stopnja.ime}}/">{{stopnja.ime}}</a></li>
+          <li class="is-active"><a href="/stopnja_{{stopnja.ime}}/program_{{program.ime}}/" aria-current="page">{{program.ime}}</a></li>
+        </ul>
+      </nav>
+  </div>
+
+  <div class="box">
     <p><h1>Vaje v programu {{program.ime}} na stopnji {{stopnja.ime}}:</h1></p>
 
     <div class="box">
@@ -18,7 +28,7 @@
             %for vaja in vaje:
             <tr>
               <td>{{vaja.kategorija}}</td>
-              <td>{{vaja.ime}}</td>
+              <td> <a class="button is-small is-rounded" href="/stopnja_{{stopnja.ime}}/program_{{program.ime}}/vaja_{{vaja.ime}}/" >{{vaja.ime}}</a></td>
               <td>{{vaja.opis}}</td>
               <td>ogled posnetka</td>
               <td>uredi vajo</td>
@@ -28,10 +38,6 @@
       </table>
     </div>
 
-
-    %for vaja in vaje:
-    <a class="button is-medium is-rounded" href="/stopnja_{{stopnja.ime}}/program_{{program.ime}}/vaja_{{vaja.ime}}/">{{vaja.ime}}</a>
-    %end
   </div>
 
   <div class="box">
@@ -40,14 +46,22 @@
       <div class="column">
         <p><h3>Dodaj vajo:</h3></b>
         <div class="panel-block">
-          <form action="/stopnja_{{stopnja.ime}}/program_{{program.ime}}/dodaj-vajo/" method="POST">
+          <form action="/stopnja_{{stopnja.ime}}/program_{{program.ime}}/dodaj-vajo/" method="POST" enctype="multipart/form-data">
             <p>ime vaje: <input type="text" name="ime_vaje"></p>
             <p>kategorija: <input type="text" name="kategorija"></p>
             <p>opis: <input type="text" name="opis"></p>
-            <p>glasba: <input type="text" name="glasba"></p>
-            <p>posnetek: <input type="text" name="posnetek"></p>
-            <p><input type="submit" value="Dodaj!"></p>
-          </form>
+
+            <div class="columns">
+              <div class="column">
+                <p>Izberi glasbo: <input type="file" name="glasba"></p>
+              </div>
+              <div class="column">
+                <p>Izberi posnetek: <input type="file" name="posnetek"></p>
+              </div>
+            </div>
+            
+            <p><input type="submit" value="Dodaj vajo!"></p>
+            </form>
         </div>
       </div>
 
@@ -74,18 +88,21 @@
     <p><h3>Premakni vajo:</h3></p>
     <div class="select is-small">
       <form action="/stopnja_{{stopnja.ime}}/program_{{program.ime}}/premakni-vajo/" method="POST">
+
         <h4>Izberi vajo:</h4>
         <select  name="vaja">
           %for vaja in vaje:
           <option>{{vaja.ime}}</option>
           %end
         </select>
+
         <h4>V kateri program bi rad premakil vajo?</h4>
-        <select  name="v_program">
+        <select  name="ime_v_program">
           %for program in programi_na_stopnji:
           <option>{{program.ime}}</option>
           %end
         </select>
+        
         <div class="control">
           <input type="submit" class="button is-small" value="Premakni!">
         </div>

@@ -2,6 +2,16 @@
 
 <div class="notification is-primary has-background-info-light has-text-info">
 
+
+  <div class="box">
+    <nav class="breadcrumb has-arrow-separator" aria-label="breadcrumbs">
+        <ul>
+          <li><a href="/">zvezek</a></li>
+          <li class="is-active"><a href="/stopnja_{{stopnja.ime}}/" aria-current="page">{{stopnja.ime}}</a></li>
+        </ul>
+      </nav>
+    </div>
+
   <div class="box">
     <p><h1>Programi na stopnji {{stopnja.ime}}:</h1></p>
     %for program in programi:
