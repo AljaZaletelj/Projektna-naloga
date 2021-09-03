@@ -1,6 +1,8 @@
-from tekstovni_vmesnik import premakni_vajo
+#from tekstovni_vmesnik import premakni_vajo
 import bottle
-from model import Uporabnik, Zvezek, Vaja
+import os
+import shutil
+from model import Uporabnik, Zvezek, Vaja, Program
 
 PISKOTEK_UPORABNISKO_IME = "uporabnisko_ime"
 SKRIVNOST = "to je ena skrivnost"
@@ -27,16 +29,69 @@ def trenutna_vaja(uporabnik, ime_vaje, ime_programa, ime_stopnje):
             return vaja
 #    return uporabnik.zvezek.najdi_vajo_iz_programa_po_imenu(ime_vaje, program)
 
+#def unikatno_ime_glasbe(ime_glasbe, ime_vaje, program):
+#    unikatno_ime_programa = program.unikatno_ime_programa()
+#    return f"glasba {ime_glasbe} za vajo {ime_vaje} iz {unikatno_ime_programa}"
+#
+#def unikatno_ime_posnetka(ime_posnetka, ime_vaje, program):
+#    unikatno_ime_programa = program.unikatno_ime_programa()
+#    return f"posnetek {ime_posnetka} za vajo {ime_vaje} iz {unikatno_ime_programa}"
+
+
+#mape
+
+def ustvari_novo_mapo_za_uporbnika(uporabnisko_ime):
+    pot = os.path.join("./views/datoteke", uporabnisko_ime)
+    if os.path.isdir(pot):
+        pass
+    else: 
+        os.mkdir(pot)
+
+def ustvari_novo_mapo_za_stopnjo(uporabnik, ime_stopnje):
+    uporabnisko_ime = uporabnik.uporabnisko_ime
+    skupna_pot = f"./views/datoteke/{uporabnisko_ime}"
+    pot = os.path.join(skupna_pot, ime_stopnje)
+    if os.path.isdir(pot):
+        pass
+    else: 
+        os.mkdir(pot)
+
+def izbrisi_mapo_za_stopnjo(uporabnik, ime_stopnje):
+    pot = os.path.join(f"./views/datoteke/{uporabnik.uporabnisko_ime}", ime_stopnje)
+    os.remove(pot)
+
+def ustvari_novo_mapo_za_program(uporabnik, ime_stopnje, ime_programa):
+    pot = os.path.join(f"./views/datoteke/{uporabnik.uporabnisko_ime}/{ime_stopnje}", ime_programa)
+    os.mkdir(pot)
+
+#def izbrisi_mapo_za_program(uporabnik, ime_stopnje, ime_programa):
+
+def ustvari_novo_mapo_za_vajo(uporabnik, ime_stopnje, ime_programa, ime_vaje):
+    pot = os.path.join(f"./views/datoteke/{uporabnik.uporabnisko_ime}/{ime_stopnje}/{ime_programa}", ime_vaje)
+    if os.path.isdir(pot):
+        pass
+    else: 
+        os.mkdir(pot)
+        pot_za_glasbo = os.path.join(pot, "glasba")
+        pot_za_posnetke = os.path.join(pot, "posnetki")
+        os.mkdir(pot_za_glasbo)
+        os.mkdir(pot_za_posnetke)
+
+#def izbrisi_mapo_za_vajo(uporabnik, ime_stopnje, ime_programa, ime_vaje)
+
 
 def trenutni_uporabnik():
     uporabnisko_ime = bottle.request.get_cookie(PISKOTEK_UPORABNISKO_IME, secret=SKRIVNOST)
     if uporabnisko_ime:
+        ustvari_novo_mapo_za_uporbnika(uporabnisko_ime)
         return Uporabnik.iz_datoteke(uporabnisko_ime)
+        
     else:
         bottle.redirect("/prijava/")
 
 def shrani_stanje(uporabnik):
     uporabnik.v_datoteko()
+
 
 
 #registracija--------------------------------------------------------------------------------------------------------
@@ -100,12 +155,13 @@ def odjava():
 def osnovna_stran():
     uporabnik = trenutni_uporabnik()
     return bottle.template(
-        "osnovna_stran.html", zvezek = uporabnik.zvezek, uporabnik = uporabnik)
+        "osnovna_stran.html", zvezek = uporabnik.zvezek, uporabnik = uporabnik, slika = f"./views/datoteke/slike/tretja_slika.webp")
 
 @bottle.post("/dodaj_stopnjo/")
 def dodaj_stopnjo():
     uporabnik = trenutni_uporabnik()
     ime_stopnje = bottle.request.forms["ime_stopnje"]
+    ustvari_novo_mapo_za_stopnjo(uporabnik, ime_stopnje)
     uporabnik.zvezek.dodaj_stopnjo(ime_stopnje)
     shrani_stanje(uporabnik)
     bottle.redirect("/")
@@ -116,8 +172,11 @@ def odstrani_stopnjo():
     ime_stopnje = bottle.request.forms["ime_stopnje"]
     iskana_stopnja = trenutna_stopnja(uporabnik, ime_stopnje)
     uporabnik.zvezek.odstrani_stopnjo(iskana_stopnja)
+#    izbrisi_mapo_za_stopnjo(uporabnik, ime_stopnje)
     shrani_stanje(uporabnik)
+   
     bottle.redirect("/")
+
 
 #ogled stopnje-------------------------------------------------------------------------------------------------------
 
@@ -133,8 +192,9 @@ def ogled_stopnje(ime_stopnje):
 def dodaj_program(ime_stopnje):
     uporabnik = trenutni_uporabnik()
     iskana_stopnja = trenutna_stopnja(uporabnik, ime_stopnje)
-    ime = bottle.request.forms["ime_programa"]
-    uporabnik.zvezek.dodaj_program(ime, iskana_stopnja)
+    ime_programa = bottle.request.forms["ime_programa"]
+    uporabnik.zvezek.dodaj_program(ime_programa, iskana_stopnja)
+    ustvari_novo_mapo_za_program(uporabnik, ime_stopnje, ime_programa)
     shrani_stanje(uporabnik)
     bottle.redirect(f"/stopnja_{ime_stopnje}/")
 
@@ -145,6 +205,7 @@ def odstrani_program(ime_stopnje):
     ime_programa = bottle.request.forms["ime_programa"]
     iskan_program = trenutni_program(uporabnik, ime_programa, ime_stopnje)
     uporabnik.zvezek.odstrani_program(iskan_program)
+    #izbrisi_mapo_za_program(uporabnik, ime_stopnje, ime_programa)
     shrani_stanje(uporabnik)
     bottle.redirect(f"/stopnja_{ime_stopnje}/")
 
@@ -167,14 +228,28 @@ def dodaj_vajo(ime_stopnje, ime_programa):
     uporabnik = trenutni_uporabnik()
     iskan_program = trenutni_program(uporabnik, ime_programa, ime_stopnje)
     ime_vaje = bottle.request.forms["ime_vaje"]
+    ustvari_novo_mapo_za_vajo(uporabnik, ime_stopnje, ime_programa, ime_vaje)
     kategorija = bottle.request.forms["kategorija"]
     opis = bottle.request.forms["opis"]
-    glasba = bottle.request.forms["glasba"]
-    posnetek = bottle.request.forms["posnetek"]
-    uporabnik.zvezek.dodaj_vajo(ime_vaje, iskan_program, kategorija, opis, glasba, posnetek)
+    #nalozi glasbo
+    glasba = bottle.request.files.get("glasba")
+    ime_glasbe = glasba.filename
+    #_, ext = os.path.splitext(glasba.filename)
+    #if ext not in ('.wav','.mp3'):
+    #    return 'File extension not allowed.'
+    shrani_v = f"./views/datoteke/{uporabnik.uporabnisko_ime}/{ime_stopnje}/{ime_programa}/{ime_vaje}/glasba"
+    glasba.save(shrani_v)
+    #nalozi posnetek
+    posnetek = bottle.request.files.get("posnetek")
+    ime_posnetka = posnetek.filename
+    #_, ext = os.path.splitext(posnetek.filename)
+    #if ext not in ('.wav','.mp4'):
+    #    return 'File extension not allowed.'
+    shrani_v = f"./views/datoteke/{uporabnik.uporabnisko_ime}/{ime_stopnje}/{ime_programa}/{ime_vaje}/posnetki"
+    posnetek.save(shrani_v)
+    uporabnik.zvezek.dodaj_vajo(ime_vaje, iskan_program, kategorija, opis, ime_glasbe, ime_posnetka)
     shrani_stanje(uporabnik)
     bottle.redirect(f"/stopnja_{ime_stopnje}/program_{ime_programa}/")
-
 
 
 @bottle.post("/stopnja_<ime_stopnje>/program_<ime_programa>/odstrani-vajo/")
@@ -186,18 +261,23 @@ def odstrani_vajo(ime_stopnje, ime_programa):
         if vaja.ime == ime_vaje and vaja.program == iskan_program:
             iskana_vaja = vaja
     uporabnik.zvezek.odstrani_vajo(iskana_vaja)
+    #izbrisi_mapo_za_vajo(uporabnik, ime_stopnje, ime_programa, ime_vaje)
     shrani_stanje(uporabnik)
     bottle.redirect(f"/stopnja_{ime_stopnje}/program_{ime_programa}/")
 
 
-#NE DELA!
 @bottle.post("/stopnja_<ime_stopnje>/program_<ime_programa>/premakni-vajo/")
 def premanki_vajo(ime_stopnje, ime_programa):
     uporabnik = trenutni_uporabnik()
     ime_vaje = bottle.request.forms["vaja"]
     iskana_vaja = trenutna_vaja(uporabnik, ime_vaje, ime_programa, ime_stopnje)
-    v_program = bottle.request.forms["v_program"]
+    ime_v_program = bottle.request.forms["ime_v_program"]
+    v_program = trenutni_program(uporabnik, ime_v_program, ime_stopnje)
     iskana_vaja.premakni_vajo(v_program)
+    #premakni mapo
+    source = f"./views/datoteke/{uporabnik.uporabnisko_ime}/{ime_stopnje}/{ime_programa}/{ime_vaje}"
+    destination = f"./views/datoteke/{uporabnik.uporabnisko_ime}/{ime_stopnje}/{ime_v_program}"
+    shutil.move(source, destination)
     shrani_stanje(uporabnik)
     bottle.redirect(f"/stopnja_{ime_stopnje}/program_{ime_programa}/")
 
@@ -210,12 +290,8 @@ def ogled_vaje(ime_stopnje, ime_programa, ime_vaje):
     iskana_stopnja = trenutna_stopnja(uporabnik, ime_stopnje)
     iskan_program = trenutni_program(uporabnik, ime_programa, ime_stopnje)
     iskana_vaja = trenutna_vaja(uporabnik, ime_vaje, ime_programa, ime_stopnje)
-    return bottle.template("ogled_vaje.html", uporabnik = uporabnik, stopnja = iskana_stopnja, program = iskan_program, vaja = iskana_vaja)
-
-
-#@bottle.post("/stopnja_<ime_stopnje>/program_<ime_programa>/vaja_<ime_vaje>/uredi-vajo/")
-#def uredi_vajo(ime_stopnje, ime_programa, ime_vaje):
-
+    return bottle.template("ogled_vaje.html", uporabnik = uporabnik, stopnja = iskana_stopnja, program = iskan_program, vaja = iskana_vaja,
+    posnetek = f"./views/datoteke/{uporabnik.uporabnisko_ime}/{ime_stopnje}/{ime_programa}/{ime_vaje}/posnetki", glasba = f"./views/datoteke/{uporabnik.uporabnisko_ime}/{ime_stopnje}/{ime_programa}/{ime_vaje}/glasba")
 
 # pomoc --------------------------------------------------------------------------------------------------------
 @bottle.get("/pomoc/")
