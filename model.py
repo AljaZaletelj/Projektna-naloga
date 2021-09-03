@@ -184,6 +184,16 @@ class Vaja:
     def unikatno_ime_vaje(self):
         return f"{self.ime} v {self.program.ime} za {self.program.stopnja.ime}"
 
+    def unikatno_ime_glasbe(self, ime_glasbe):
+        unikatno_ime_vaje = self.unikatno_ime_vaje
+        return f"glasba {ime_glasbe} za {unikatno_ime_vaje}"
+
+
+    def unikatno_ime_posnetka(self, ime_posnetka):
+        unikatno_ime_vaje = self.unikatno_ime_vaje
+        return f"posnetek {ime_posnetka} za {unikatno_ime_vaje}"
+
+
     def premakni_vajo(self, v_program):
         self.program = v_program
 
