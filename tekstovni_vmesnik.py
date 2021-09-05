@@ -13,13 +13,16 @@ except FileNotFoundError:
 def prikaz_stopnje(stopnja):
     return f"{stopnja.ime}"
 
+
 def prikaz_programa(program):
     return f"{program.ime} na {program.stopnja.ime}"
+
 
 def prikaz_vaje(vaja):
     return f"{vaja.ime}: {vaja.kategorija}, {vaja.opis}, {vaja.glasba}, {vaja.posnetek}"
 
 # Pomožne funkcije za vnos
+
 
 def vnesi_stevilo(pozdrav):
     """S standardnega vhoda prebere naravno število."""
@@ -31,6 +34,8 @@ def vnesi_stevilo(pozdrav):
             print("Prosim, da vnesete število!")
 
 #
+
+
 def izberi(seznam):
     if len(seznam) == 1:
         opis, element = seznam[0]
@@ -50,12 +55,13 @@ def izberi(seznam):
 def izberi_stopnjo(stopnje):
     return izberi([(prikaz_stopnje(stopnja), stopnja) for stopnja in stopnje])
 
+
 def izberi_program(programi):
     return izberi([(prikaz_programa(program), program) for program in programi])
 
+
 def izberi_vajo(vaje):
     return izberi([(prikaz_vaje(vaja), vaja) for vaja in vaje])
-
 
 
 # Tekstovni vmesnik
@@ -66,18 +72,18 @@ def tekstovni_vmesnik():
     while True:
         try:
             moznosti = [
-            ("pogledal stopnje", pokazi_stopnje),
-            ("dodal stopnjo", dodaj_stopnjo),
-            ("odstranil stopnjo", odstrani_stopnjo),
-            ("pogledal programe na stopnji", pokazi_programe_na_stopnji),
-            ("dodal program", dodaj_program),
-            ("odstranil program", odstrani_program),
-            ("pogledal vaje v programu", pokazi_vaje_v_programu),
-            ("pogledal kategorije v programu", pokazi_kategorije_v_programu),
-            ("dodal vajo", dodaj_vajo),
-            ("odstranil_vajo", odstrani_vajo),
-            ("premaknil vajo", premakni_vajo),
-            ("uredil vajo", uredi_vajo)
+                ("pogledal stopnje", pokazi_stopnje),
+                ("dodal stopnjo", dodaj_stopnjo),
+                ("odstranil stopnjo", odstrani_stopnjo),
+                ("pogledal programe na stopnji", pokazi_programe_na_stopnji),
+                ("dodal program", dodaj_program),
+                ("odstranil program", odstrani_program),
+                ("pogledal vaje v programu", pokazi_vaje_v_programu),
+                ("pogledal kategorije v programu", pokazi_kategorije_v_programu),
+                ("dodal vajo", dodaj_vajo),
+                ("odstranil_vajo", odstrani_vajo),
+                ("premaknil vajo", premakni_vajo),
+                ("uredil vajo", uredi_vajo)
             ]
             print(20 * "-")
             print("Kaj bi radi naredili?")
@@ -92,6 +98,7 @@ def tekstovni_vmesnik():
             print("Nasvidenje!")
             return
 
+
 def uvodni_pozdrav():
     print("Pozdravljen!")
     print("Za izhod pritisnite tipko Ctrl-C.")
@@ -104,11 +111,13 @@ def pokazi_stopnje():
         for stopnja in zvezek.stopnje:
             print(prikaz_stopnje(stopnja))
 
+
 def dodaj_stopnjo():
     print("Vnesi ime stopnje:")
     ime = input("Ime stopnje: ")
     zvezek.dodaj_stopnjo(ime)
     print(f"Stopnja {ime} je uspešno dodana!")
+
 
 def odstrani_stopnjo():
     print("Katero stopnjo bi rad odstranil?")
@@ -119,6 +128,7 @@ def odstrani_stopnjo():
     else:
         print("Odstranitev stopnje je preklicana.")
 
+
 def pokazi_programe_na_stopnji():
     print("Izberi stopnjo za katero bi si rad ogledal programe:")
     stopnja = izberi_stopnjo(zvezek.stopnje)
@@ -128,12 +138,14 @@ def pokazi_programe_na_stopnji():
         for program in zvezek.programi_na_stopnji(stopnja):
             print(prikaz_programa(program))
 
+
 def dodaj_program():
     print("Za katero stopnjo bi rad dodal program?")
     stopnja = izberi_stopnjo(zvezek.stopnje)
     print("Vnesi ime programa:")
     ime = input("> ")
     zvezek.dodaj_program(ime, stopnja)
+
 
 def odstrani_program():
     print("Program za katero stopnjo bi rad odstranil?")
@@ -146,6 +158,7 @@ def odstrani_program():
     else:
         print("Odstranitev programa je preklicana.")
 
+
 def pokazi_vaje_v_programu():
     print("Izberi stopnjo:")
     stopnja = izberi_stopnjo(zvezek.stopnje)
@@ -156,6 +169,7 @@ def pokazi_vaje_v_programu():
     else:
         for vaja in zvezek.vaje_v_programu(program):
             print(prikaz_vaje(vaja))
+
 
 def pokazi_kategorije_v_programu():
     print("Izberi stopnjo:")
@@ -168,6 +182,7 @@ def pokazi_kategorije_v_programu():
     else:
         for kategorija in kategorije:
             print(kategorija)
+
 
 def dodaj_vajo():
     print("Izberi stopnjo:")
@@ -187,6 +202,7 @@ def dodaj_vajo():
     zvezek.dodaj_vajo(ime, program, kategorija, opis, glasba, posnetek)
     print(f"Vaja {ime} je uspešno dodana.")
 
+
 def odstrani_vajo():
     print("Izberi stopnjo iz katere bi rad izbrisal vajo:")
     stopnja = izberi_stopnjo(zvezek.stopnje)
@@ -200,6 +216,7 @@ def odstrani_vajo():
     else:
         print("Odstranitev vaje je preklicana.")
 
+
 def premakni_vajo():
     print("Izberi stopnjo na kateri bi rad premaknil vajo:")
     stopnja = izberi_stopnjo(zvezek.stopnje)
@@ -211,6 +228,7 @@ def premakni_vajo():
     drugi_program = izberi_program(zvezek.programi_na_stopnji(stopnja))
     vaja.program = drugi_program
     print("Vaja je uspešno premaknjena!")
+
 
 def uredi_vajo():
     print("Izberi stopnjo na kateie bi rad uredil vajo:")
@@ -234,6 +252,7 @@ def uredi_vajo():
     vaja.spremeni_kategorijo(nova_kategorija)
     vaja.spremeni_opis(nov_opis)
     print("Vaja je spremenjena!")
+
 
 if __name__ == "__main__":
     tekstovni_vmesnik()
