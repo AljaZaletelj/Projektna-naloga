@@ -1,5 +1,4 @@
-# from spletni_vmesnik import dodaj_stopnjo, odstrani_program, odstrani_stopnjo, prijava_get
-from model import Zvezek, Program
+from model import Zvezek, Program, Vaja
 
 DATOTEKA_S_STANJEM = "stanje.json"
 
@@ -74,9 +73,11 @@ def tekstovni_vmesnik():
             ("dodal program", dodaj_program),
             ("odstranil program", odstrani_program),
             ("pogledal vaje v programu", pokazi_vaje_v_programu),
+            ("pogledal kategorije v programu", pokazi_kategorije_v_programu),
             ("dodal vajo", dodaj_vajo),
             ("odstranil_vajo", odstrani_vajo),
-            ("premaknil vajo", premakni_vajo)
+            ("premaknil vajo", premakni_vajo),
+            ("uredil vajo", uredi_vajo)
             ]
             print(20 * "-")
             print("Kaj bi radi naredili?")
@@ -156,6 +157,18 @@ def pokazi_vaje_v_programu():
         for vaja in zvezek.vaje_v_programu(program):
             print(prikaz_vaje(vaja))
 
+def pokazi_kategorije_v_programu():
+    print("Izberi stopnjo:")
+    stopnja = izberi_stopnjo(zvezek.stopnje)
+    print("Izberi program katerega kategorije bi si rad ogledal:")
+    program = izberi_program(zvezek.programi_na_stopnji(stopnja))
+    kategorije = zvezek.kategorije_v_programu(program)
+    if kategorije == []:
+        print("V tem programu nimaš nobenih kategorij!")
+    else:
+        for kategorija in kategorije:
+            print(kategorija)
+
 def dodaj_vajo():
     print("Izberi stopnjo:")
     stopnja = izberi_stopnjo(zvezek.stopnje)
@@ -198,6 +211,29 @@ def premakni_vajo():
     drugi_program = izberi_program(zvezek.programi_na_stopnji(stopnja))
     vaja.program = drugi_program
     print("Vaja je uspešno premaknjena!")
+
+def uredi_vajo():
+    print("Izberi stopnjo na kateie bi rad uredil vajo:")
+    stopnja = izberi_stopnjo(zvezek.stopnje)
+    print("Iz katerega programa bi rad uredil vajo?")
+    program = izberi_program(zvezek.programi_na_stopnji(stopnja))
+    print("Izberi vajo, ki bi jo rad uredil:")
+    vaja = izberi_vajo(zvezek.vaje_v_programu(program))
+    print("Dodaj novo ime vaje:")
+    print("Če kategorije ne želiš spremeniti pusti polje prazno.")
+    novo_ime = input("Novo ime: ")
+    print("V katero kategorijo bi rad prestavil vajo?")
+    print("Če kategorije ne želiš spremeniti pusti polje prazno.")
+    nova_kategorija = input("Nova kategorija: ")
+    print("Dodaj nov opis vaje.")
+    print("Če opisa ne želiš spremeniti pusti polje prazno.")
+    nov_opis = input("Nov opis: ")
+    print(novo_ime)
+    vaja.ime = novo_ime
+    print(novo_ime)
+    vaja.spremeni_kategorijo(nova_kategorija)
+    vaja.spremeni_opis(nov_opis)
+    print("Vaja je spremenjena!")
 
 if __name__ == "__main__":
     tekstovni_vmesnik()

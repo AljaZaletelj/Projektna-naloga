@@ -23,21 +23,12 @@
     </div>
 
     <div class="box">
-        <p>glasba : {{vaja.glasba}}</p>
-        <p>posnetek : {{vaja.posnetek}}</p>
+        <p>glasba: <a href="/stopnja_{{stopnja.ime}}/program_{{program.ime}}/vaja_{{vaja.ime}}/glasba_{{vaja.glasba}}" target="_blank">{{vaja.glasba}}</a></p>
+        <p>posnetek : <a href="/stopnja_{{stopnja.ime}}/program_{{program.ime}}/vaja_{{vaja.ime}}/posnetek_{{vaja.posnetek}}" target="_blank">{{vaja.posnetek}}</a></p>
     </div>
-
-    <div>
-        <audio controls>
-            <source src={{glasba}} type="audio/wav">
-        </audio>
-    </div>
-
-
-    <div>    
-        <video width="320" height="240" controls>
-            <source src={{posnetek}} type="video/mp4">
-        </video>
+    
+    <div class="box">
+        <p><a href="/stopnja_{{stopnja.ime}}/program_{{program.ime}}/vaja_{{vaja.ime}}/uredi-vajo/">uredi vajo</a></p>
     </div>
 
 </div>

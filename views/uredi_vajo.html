@@ -1,0 +1,61 @@
+% rebase('base.html')
+
+<div class="notification is-primary has-background-info-light has-text-info">
+    <div class="box">
+        <nav class="breadcrumb has-arrow-separator" aria-label="breadcrumbs">
+            <ul>
+              <li><a href="/">zvezek</a></li>
+              <li><a href="/stopnja_{{stopnja.ime}}/">{{stopnja.ime}}</a></li>
+              <li><a href="/stopnja_{{stopnja.ime}}/program_{{program.ime}}/">{{program.ime}}</a></li>
+              <li><a href="/stopnja_{{stopnja.ime}}/program_{{program.ime}}/vaja_{{vaja.ime}}/" aria-current="page">{{vaja.ime}}</a></li>
+              <li class="is-active"> urejanje vaje</li>
+            </ul>
+          </nav>
+    </div>
+
+    <div class="box">
+        <p><b>Trenutni podatki:</b></p>
+        <p>ime vaje: {{vaja.ime}}</p>
+        <p>kategorija: {{vaja.kategorija}}</p>
+        <p>opis: {{vaja.opis}}</p>
+        <p>glasba: <a href="/stopnja_{{stopnja.ime}}/program_{{program.ime}}/vaja_{{vaja.ime}}/glasba_{{vaja.glasba}}" target="_blank">{{vaja.glasba}}</a></p>
+        <p>posnetek : <a href="/stopnja_{{stopnja.ime}}/program_{{program.ime}}/vaja_{{vaja.ime}}/posnetek_{{vaja.posnetek}}" target="_blank">{{vaja.posnetek}}</a></p>
+    </div>
+
+    <div class="box">
+
+        <div class="panel-block">
+          <form action="/stopnja_{{stopnja.ime}}/program_{{program.ime}}/vaja_{{vaja.ime}}/uredi-vajo/" method="POST">
+            <p>nova kategorija: <input type="text" name="nova_kategorija" placeholder={{vaja.kategorija}}></p>
+            <p>nov opis: <input type="text" name="nov_opis" placeholder="dodaj opis"></p>
+            <div class="columns">
+              <div class="column">
+                <p>Izberi novo glasbo: <input type="file" name="nova_glasba"></p>
+              </div>
+              <div class="column">
+                <p>Izberi nov posnetek: <input type="file" name="nov_posnetek"></p>
+              </div>
+            </div>
+            <p style="color:gray; font-size: 12px;">Če katerega podatka ne želiš spremeniti, pusti polje prazno.</p>
+            <input type="submit" value="Spremeni osnovne podatke!">
+          </form>
+        </div>
+
+        <div class="panel-block">
+          <form action="/stopnja_{{stopnja.ime}}/program_{{program.ime}}/vaja_{{vaja.ime}}/spremeni-glasbo/" method="POST" enctype="multipart/form-data">
+            <p>Izberi novo glasbo: <input type="file" name="nova_glasba"></p>
+            <p style="color:gray; font-size: 12px;">Če glasbe ne želiš spremeniti, gumba ne pritiskaj.</p>
+            <input type="submit" value="Spremeni glasbo!">
+          </form>
+        </div>
+
+        <div class="panel-block">
+          <form action="/stopnja_{{stopnja.ime}}/program_{{program.ime}}/vaja_{{vaja.ime}}/spremeni-posnetek/" method="POST" enctype="multipart/form-data">
+            <p>Izberi nov posnetek: <input type="file" name="nov_posnetek"></p>
+            <p style="color:gray; font-size: 12px;">Če glasbe ne želiš spremeniti, gumba ne pritiskaj.</p>
+            <input type="submit" value="Spremeni posnetek!">
+          </form>
+        </div>
+
+    </div>
+</div>
