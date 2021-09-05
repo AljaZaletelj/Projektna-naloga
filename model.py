@@ -53,7 +53,7 @@ class Zvezek:
 
 
 
-    #kupckanje
+    #posebni seznami
 
     def programi_na_stopnji(self, stopnja):
         programi_na_stopnji = []
@@ -68,6 +68,21 @@ class Zvezek:
             if vaja.program == program:
                 vaje_v_programu.append(vaja)
         return vaje_v_programu
+
+    def kategorije_v_programu(self, program):
+        kategorije = []
+        for vaja in self.vaje_v_programu(program):
+            if vaja.kategorija not in kategorije:
+                kategorije.append(vaja.kategorija)
+        return kategorije
+
+
+    def vaje_v_kategoriji(self, program, kategorija):
+        vaje_v_kategoriji = []
+        for vaja in self.vaje_v_programu(program):
+            if vaja.kategorija == kategorija:
+                vaje_v_kategoriji.append(vaja)
+        return vaje_v_kategoriji
 
 
 
@@ -126,23 +141,26 @@ class Zvezek:
     @classmethod
     def iz_slovarja(cls, slovar_s_stanjem):
         zvezek = cls()
-        for stopnja in slovar_s_stanjem["stopnje"]:
-            zvezek.dodaj_stopnjo(stopnja["ime_stopnje"])
-        for program in slovar_s_stanjem["programi"]:
-            stopnja = zvezek.najdi_stopnjo_po_imenu(program["ime_stopnje"])
-            zvezek.dodaj_program(program["ime_programa"], stopnja)
-        for vaja in slovar_s_stanjem["vaje"]:
-            stopnja = zvezek.najdi_stopnjo_po_imenu(vaja["ime_stopnje"])
-            program = zvezek.najdi_program_iz_stopnje_po_imenu(vaja["ime_programa"], stopnja)
-            zvezek.dodaj_vajo(
-                vaja["ime_vaje"],
-                program,
-                vaja["kategorija_vaje"],
-                vaja["opis"],
-                vaja["glasba"],
-                vaja["posnetek"]
-            )
-        return zvezek
+        if len(slovar_s_stanjem["stopnje"]) == 0:
+            return Zvezek()
+        else:
+            for stopnja in slovar_s_stanjem["stopnje"]:
+                zvezek.dodaj_stopnjo(stopnja["ime_stopnje"])
+            for program in slovar_s_stanjem["programi"]:
+                stopnja = zvezek.najdi_stopnjo_po_imenu(program["ime_stopnje"])
+                zvezek.dodaj_program(program["ime_programa"], stopnja)
+            for vaja in slovar_s_stanjem["vaje"]:
+                stopnja = zvezek.najdi_stopnjo_po_imenu(vaja["ime_stopnje"])
+                program = zvezek.najdi_program_iz_stopnje_po_imenu(vaja["ime_programa"], stopnja)
+                zvezek.dodaj_vajo(
+                    vaja["ime_vaje"],
+                    program,
+                    vaja["kategorija_vaje"],
+                    vaja["opis"],
+                    vaja["glasba"],
+                    vaja["posnetek"]
+                )
+            return zvezek
 
 
     def shrani_stanje(self, ime_datoteke):
@@ -161,6 +179,12 @@ class Zvezek:
 class Stopnja:
     def __init__(self, ime):
         self.ime = ime
+    
+    def spremeni_ime(self, novo_ime):
+        if novo_ime == "" or " ":
+            pass
+        else:
+            self.ime = novo_ime
 
 
 class Program:
@@ -170,6 +194,13 @@ class Program:
 
     def unikatno_ime_programa(self):
         return f"{self.ime} za {self.stopnja.ime}"
+
+    def spremeni_ime(self, novo_ime):
+        if novo_ime == "" or " ":
+            pass
+        else:
+            self.ime = novo_ime
+
 
 class Vaja:
 
@@ -197,8 +228,23 @@ class Vaja:
     def premakni_vajo(self, v_program):
         self.program = v_program
 
+    def spremeni_kategorijo(self, nova_kategorija):
+        if nova_kategorija == "" or nova_kategorija == " ":
+            pass
+        else:
+            self.kategorija = nova_kategorija
 
+    def spremeni_opis(self, nov_opis):
+        if nov_opis == "" or nov_opis == " ":
+            pass
+        else:
+            self.opis = nov_opis
 
+    def spremeni_ime(self, novo_ime):
+        if novo_ime == "" or novo_ime == " ":
+            pass
+        else:
+            self.ime = novo_ime
 
 
 
