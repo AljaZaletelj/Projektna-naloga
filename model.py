@@ -2,20 +2,20 @@ import hashlib
 import json
 import random
 
-#UPORABNIK: ime, up.ime, geslo, zvezek
-#ZVEZEK: stopnje, programi, vaje
-#STOPNJA: ime
-#PROGRAM: ime, stopnja
-#VAJA: ime, program, kategorija, opis, glasba, posnetek
+# UPORABNIK: ime, up.ime, geslo, zvezek
+# ZVEZEK: stopnje, programi, vaje
+# STOPNJA: ime
+# PROGRAM: ime, stopnja
+# VAJA: ime, program, kategorija, opis, glasba, posnetek
 
-#Zvezek--------------------------------------------------------------------------------------------------------------
+# Zvezek--------------------------------------------------------------------------------------------------------------
+
 
 class Zvezek:
     def __init__(self):
         self.stopnje = []
         self.programi = []
         self.vaje = []
-
 
     def dodaj_stopnjo(self, ime_stopnje):
         for stopnja in self.stopnje:
@@ -30,30 +30,26 @@ class Zvezek:
     #dodajanje in odstranjevanje
 
     def dodaj_program(self, ime, stopnja):
-  #      for program in self.programi_na_stopnji(stopnja):
-  #          if program.ime == ime:
-  #              raise ValueError("Program s tem imenom na tej stopnji že obstaja!")
+        for program in self.programi_na_stopnji(stopnja):
+            if program.ime == ime:
+                raise ValueError("Program s tem imenom na tej stopnji že obstaja!")
         nov = Program(ime, stopnja)
         self.programi.append(nov)
 
     def odstrani_program(self, program):
         self.programi.remove(program)
 
-
     def dodaj_vajo(self, ime, program, kategorija, opis="", glasba=None, posnetek=None):
- #       for vaja in self.vaje_v_programu(program):
- #           if vaja.ime == ime:
- #               raise ValueError("Vaja s tem imenom v tem programu že obstaja!")
+        for vaja in self.vaje_v_programu(program):
+            if vaja.ime == ime:
+                raise ValueError("Vaja s tem imenom v tem programu že obstaja!")
         nova = Vaja(ime, program, kategorija, opis, glasba, posnetek)
         self.vaje.append(nova)
 
     def odstrani_vajo(self, vaja):
         self.vaje.remove(vaja)
 
-
-
-
-    #posebni seznami
+    # posebni seznami
 
     def programi_na_stopnji(self, stopnja):
         programi_na_stopnji = []
@@ -76,7 +72,6 @@ class Zvezek:
                 kategorije.append(vaja.kategorija)
         return kategorije
 
-
     def vaje_v_kategoriji(self, program, kategorija):
         vaje_v_kategoriji = []
         for vaja in self.vaje_v_programu(program):
@@ -84,15 +79,12 @@ class Zvezek:
                 vaje_v_kategoriji.append(vaja)
         return vaje_v_kategoriji
 
-
-
-    #iskanje
+    # iskanje
 
     def najdi_stopnjo_po_imenu(self, ime_stopnje):
         for stopnja in self.stopnje:
             if stopnja.ime == ime_stopnje:
                 return stopnja
-
 
     def najdi_program_iz_stopnje_po_imenu(self, ime_programa, stopnja):
         unikatno_ime = f"{ime_programa} za {stopnja.ime}"
@@ -106,32 +98,31 @@ class Zvezek:
             if vaja.unikatno_ime_vaje() == unikatno_ime:
                 return vaja
 
-
-    #zapisovanje v json
+    # zapisovanje v json
 
     def v_slovar(self):
         return {
             "stopnje": [
                 {
-                    "ime_stopnje" : stopnja.ime
+                    "ime_stopnje": stopnja.ime
                 }
                 for stopnja in self.stopnje
             ],
             "programi": [
                 {
-                    "ime_programa" : program.ime,
-                    "ime_stopnje" : program.stopnja.ime
+                    "ime_programa": program.ime,
+                    "ime_stopnje": program.stopnja.ime
                 }
                 for program in self.programi
             ],
             "vaje": [
                 {
-                    "ime_vaje" : vaja.ime,
+                    "ime_vaje": vaja.ime,
                     "ime_programa": vaja.program.ime,
-                    "ime_stopnje" : vaja.program.stopnja.ime,
-                    "kategorija_vaje" : vaja.kategorija,
+                    "ime_stopnje": vaja.program.stopnja.ime,
+                    "kategorija_vaje": vaja.kategorija,
                     "opis": vaja.opis,
-                    "glasba" : vaja.glasba,
+                    "glasba": vaja.glasba,
                     "posnetek": vaja.posnetek
                 }
                 for vaja in self.vaje
@@ -151,7 +142,8 @@ class Zvezek:
                 zvezek.dodaj_program(program["ime_programa"], stopnja)
             for vaja in slovar_s_stanjem["vaje"]:
                 stopnja = zvezek.najdi_stopnjo_po_imenu(vaja["ime_stopnje"])
-                program = zvezek.najdi_program_iz_stopnje_po_imenu(vaja["ime_programa"], stopnja)
+                program = zvezek.najdi_program_iz_stopnje_po_imenu(
+                    vaja["ime_programa"], stopnja)
                 zvezek.dodaj_vajo(
                     vaja["ime_vaje"],
                     program,
@@ -161,7 +153,6 @@ class Zvezek:
                     vaja["posnetek"]
                 )
             return zvezek
-
 
     def shrani_stanje(self, ime_datoteke):
         with open(ime_datoteke, "w", encoding="utf-8") as datoteka:
@@ -174,12 +165,12 @@ class Zvezek:
         return cls.iz_slovarja(slovar_s_stanjem)
 
 
-#Stopnja, Program, Vaja -------------------------------------------------------------------------------
- 
+# Stopnja, Program, Vaja -------------------------------------------------------------------------------
+
 class Stopnja:
     def __init__(self, ime):
         self.ime = ime
-    
+
     def spremeni_ime(self, novo_ime):
         if novo_ime == "" or " ":
             pass
@@ -219,11 +210,9 @@ class Vaja:
         unikatno_ime_vaje = self.unikatno_ime_vaje
         return f"glasba {ime_glasbe} za {unikatno_ime_vaje}"
 
-
     def unikatno_ime_posnetka(self, ime_posnetka):
         unikatno_ime_vaje = self.unikatno_ime_vaje
         return f"posnetek {ime_posnetka} za {unikatno_ime_vaje}"
-
 
     def premakni_vajo(self, v_program):
         self.program = v_program
@@ -247,9 +236,7 @@ class Vaja:
             self.ime = novo_ime
 
 
-
-#UPORABNIK-----------------------------------------------------------------------------------------------------
-
+# UPORABNIK-----------------------------------------------------------------------------------------------------
 
 
 class Uporabnik:
@@ -260,20 +247,18 @@ class Uporabnik:
         self.zasifrirano_geslo = zasifrirano_geslo
         self.zvezek = zvezek
 
-    #prijava
-    
+    # prijava
+
     @staticmethod
     def prijava(uporabnisko_ime, geslo_v_cistopisu):
         uporabnik = Uporabnik.iz_datoteke(uporabnisko_ime)
         if uporabnik is None:
             raise ValueError("Uporabniško ime ne obstaja")
         elif uporabnik.preveri_geslo(geslo_v_cistopisu):
-            return uporabnik        
+            return uporabnik
         else:
             raise ValueError("Geslo je napačno")
 
-
-    
     @staticmethod
     def ime_uporabnikove_datoteke(uporabnisko_ime):
         return f"{uporabnisko_ime}.json"
@@ -287,24 +272,22 @@ class Uporabnik:
         except FileNotFoundError:
             return None
 
-
     def preveri_geslo(self, geslo_v_cistopisu):
         sol, _ = self.zasifrirano_geslo.split("$")
         return self.zasifrirano_geslo == Uporabnik._zasifriraj_geslo(geslo_v_cistopisu, sol)
 
+    # registracija
 
-    #registracija
- 
     @staticmethod
     def registracija(ime, uporabnisko_ime, geslo_v_cistopisu):
         if Uporabnik.iz_datoteke(uporabnisko_ime) is not None:
             raise ValueError("Uporabniško ime že obstaja")
         else:
             zasifrirano_geslo = Uporabnik._zasifriraj_geslo(geslo_v_cistopisu)
-            uporabnik = Uporabnik(ime, uporabnisko_ime, zasifrirano_geslo, Zvezek())
+            uporabnik = Uporabnik(ime, uporabnisko_ime,
+                                  zasifrirano_geslo, Zvezek())
             uporabnik.v_datoteko()
             return uporabnik
-
 
     def _zasifriraj_geslo(geslo_v_cistopisu, sol=None):
         if sol is None:
@@ -314,14 +297,13 @@ class Uporabnik:
         h.update(posoljeno_geslo.encode(encoding="utf-8"))
         return f"{sol}${h.hexdigest()}"
 
-
     def v_datoteko(self):
         with open(
             Uporabnik.ime_uporabnikove_datoteke(self.uporabnisko_ime), "w", encoding="utf-8"
         ) as datoteka:
             json.dump(self.v_slovar(), datoteka, ensure_ascii=False, indent=4)
 
-    #slovar
+    # slovar
 
     def v_slovar(self):
         return {
@@ -338,7 +320,3 @@ class Uporabnik:
         zasifrirano_geslo = slovar["zasifrirano_geslo"]
         zvezek = Zvezek.iz_slovarja(slovar["zvezek"])
         return Uporabnik(ime, uporabnisko_ime, zasifrirano_geslo, zvezek)
-
-
-
-
