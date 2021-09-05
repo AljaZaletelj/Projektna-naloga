@@ -3,9 +3,13 @@
 <div class="notification is-primary has-background-info-light has-text-info">
 
   <div class="box">
-    <p><h1>Tvoji razredi:</h1></p>
-    %for stopnja in zvezek.stopnje:
-    <a class="button is-medium is-rounded" href="/stopnja_{{stopnja.ime}}/">{{stopnja.ime}}</a>
+    <p><h1>Tvoje stopnje:</h1></p>
+    %if len(zvezek.stopnje) == 0:
+      <p>V svojem zvezku nimaš še nobenih stopenj!</p>
+    %else:
+      %for stopnja in zvezek.stopnje:
+      <a class="button is-medium is-rounded" href="/stopnja_{{stopnja.ime}}/">{{stopnja.ime}}</a>
+      %end
     %end
   </div>
 
@@ -17,7 +21,7 @@
         <p><h3>Dodaj stopnjo:</h3></b>
         <div class="panel-block">
           <form action="/dodaj_stopnjo/" method="POST">
-            ime stopnje: <input type="text" name="ime_stopnje">
+            ime stopnje: <input type="text" name="ime_stopnje" placeholder="1.razred, pripravnica, vrtec">
             <input type="submit" value="Dodaj!">
           </form>
         </div>
@@ -42,15 +46,6 @@
 
 
   </div>
-
-  <div class="box">
-    <img src="https://cdn.pixabay.com/photo/2015/03/26/09/47/sky-690293__340.jpg" width="200" height="300">
-  </div>
-
-  <div class="box">
-    <img src="C:\Users\zalet\OneDrive\Dokumenti\fmf\1.letnik\Projektna-naloga\views\datoteke\slike\cetrta_slika.jpg" width="200" height="300">
-  </div>
-
 
 </div>
   

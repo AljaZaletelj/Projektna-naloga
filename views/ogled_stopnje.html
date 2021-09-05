@@ -14,10 +14,14 @@
 
   <div class="box">
     <p><h1>Programi na stopnji {{stopnja.ime}}:</h1></p>
-    %for program in programi:
-    <a class="button is-medium is-rounded" href="/stopnja_{{stopnja.ime}}/program_{{program.ime}}/">{{program.ime}}</a>
+    %if len(programi) == 0:
+      <p>Na tej stopnji nimaš še nobenih programov!</p>
+    %else:
+      %for program in programi:
+      <a class="button is-medium is-rounded" href="/stopnja_{{stopnja.ime}}/program_{{program.ime}}/">{{program.ime}}</a>
+      %end
     %end
-  </div>
+  </div> 
 
   <div class="box">
     <div class="columns">
@@ -26,7 +30,7 @@
         <p><h3>Dodaj program:</h3></b>
         <div class="panel-block">
           <form action="/stopnja_{{stopnja.ime}}/dodaj-program/" method="POST">
-            ime programa: <input type="text" name="ime_programa">
+            ime programa: <input type="text" name="ime_programa" placeholder="oktober, 1.dov, zaključni nastop...">
             <input type="submit" value="Dodaj!">
           </form>
         </div>

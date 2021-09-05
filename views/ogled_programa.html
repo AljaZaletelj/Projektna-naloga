@@ -15,28 +15,34 @@
   <div class="box">
     <p><h1>Vaje v programu {{program.ime}} na stopnji {{stopnja.ime}}:</h1></p>
 
-    <div class="box">
-      <table>
-          <thead>
-            <tr>
-              <th>kategorija: </th>
-              <th>ime vaje: </th>
-              <th>opis: </th>
-            </tr>
-          </thead>
-          <tbody>
-            %for vaja in vaje:
-            <tr>
-              <td>{{vaja.kategorija}}</td>
-              <td> <a class="button is-small is-rounded" href="/stopnja_{{stopnja.ime}}/program_{{program.ime}}/vaja_{{vaja.ime}}/" >{{vaja.ime}}</a></td>
-              <td>{{vaja.opis}}</td>
-              <td>ogled posnetka</td>
-              <td>uredi vajo</td>
-            </tr>
-            %end
-          </tbody>
-      </table>
-    </div>
+    %if len(vaje) == 0:
+      <p>V tem programu nimaš še nobene vaje!</p>
+    %else:
+
+      <div class="box">
+        <table>
+            <thead>
+              <tr>
+                <th>kategorija: </th>
+                <th>ime vaje: </th>
+                <th>opis: </th>
+              </tr>
+            </thead>
+            <tbody>
+              %for kategorija in kategorije:
+              %    for vaja in uporabnik.zvezek.vaje_v_kategoriji(program, kategorija):
+              <tr>
+                <td>{{vaja.kategorija}}</td>
+                <td> <a class="button is-small is-rounded" href="/stopnja_{{stopnja.ime}}/program_{{program.ime}}/vaja_{{vaja.ime}}/" >{{vaja.ime}}</a></td>
+                <td>{{vaja.opis}}</td>
+                <td><a href="/stopnja_{{stopnja.ime}}/program_{{program.ime}}/vaja_{{vaja.ime}}/uredi-vajo/">uredi vajo</a></td>
+              </tr>
+              %    end
+              %end
+            </tbody>
+        </table>
+      </div>
+    %end
 
   </div>
 
@@ -47,9 +53,9 @@
         <p><h3>Dodaj vajo:</h3></b>
         <div class="panel-block">
           <form action="/stopnja_{{stopnja.ime}}/program_{{program.ime}}/dodaj-vajo/" method="POST" enctype="multipart/form-data">
-            <p>ime vaje: <input type="text" name="ime_vaje"></p>
-            <p>kategorija: <input type="text" name="kategorija"></p>
-            <p>opis: <input type="text" name="opis"></p>
+            <p>kategorija: <input type="text" name="kategorija" placeholder="ogrevanje, drog, sredina, skoki..."></p>
+            <p>ime vaje: <input type="text" name="ime_vaje" placeholder="plie, tendu, ogrevalna vaja, reztegovanje..."></p>
+            <p>opis: <input type="text" name="opis" placeholder="3*demi plie in en grand plie v vseh pozicijah"></p>
 
             <div class="columns">
               <div class="column">
@@ -89,22 +95,33 @@
     <div class="select is-small">
       <form action="/stopnja_{{stopnja.ime}}/program_{{program.ime}}/premakni-vajo/" method="POST">
 
-        <h4>Izberi vajo:</h4>
-        <select  name="vaja">
-          %for vaja in vaje:
-          <option>{{vaja.ime}}</option>
-          %end
-        </select>
+        <div class="columns">
 
-        <h4>V kateri program bi rad premakil vajo?</h4>
-        <select  name="ime_v_program">
-          %for program in programi_na_stopnji:
-          <option>{{program.ime}}</option>
-          %end
-        </select>
-        
-        <div class="control">
-          <input type="submit" class="button is-small" value="Premakni!">
+          <div class="column">
+            <h4>Izberi vajo:</h4>
+            <select  name="vaja">
+              %for vaja in vaje:
+              <option>{{vaja.ime}}</option>
+              %end
+            </select>
+          </div>
+
+          <div class="column">
+            <h4>V kateri program bi rad premakil vajo?</h4>
+            <select  name="ime_v_program">
+              %for program in programi_na_stopnji:
+              <option>{{program.ime}}</option>
+              %end
+            </select>
+          </div>
+
+
+          <div class="column">
+            <div class="control">
+              <input type="submit" class="button is-small" value="Premakni!">
+            </div>
+          </div>
+
         </div>
       </form>
     </div>
