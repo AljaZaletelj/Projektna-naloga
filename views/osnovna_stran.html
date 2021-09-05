@@ -21,7 +21,7 @@
         <p><h3>Dodaj stopnjo:</h3></b>
         <div class="panel-block">
           <form action="/dodaj_stopnjo/" method="POST">
-            ime stopnje: <input type="text" name="ime_stopnje" placeholder="1.razred, pripravnica, vrtec">
+            ime stopnje: <input type="text" name="ime_stopnje" placeholder="1.razred, pripravnica, vrtec" required>
             <input type="submit" value="Dodaj!">
           </form>
         </div>
@@ -31,6 +31,9 @@
         <p><h3>Odstrani stopnjo:</h3></p>
         <div class="select is-small">
           <form action="/odstrani_stopnjo/" method="POST">
+            %if len(zvezek.stopnje) == 0:
+              <p>Nobene stopnje ni mogoče odstaniti!</p>
+            %else:
             <select  name="ime_stopnje">
               %for stopnja in zvezek.stopnje:
               <option>{{stopnja.ime}}</option>
@@ -40,6 +43,7 @@
               <input type="submit" class="button is-small" value="odstrani">
             </div>
           </form>
+          %end
         </div>
       </div>
     </div>

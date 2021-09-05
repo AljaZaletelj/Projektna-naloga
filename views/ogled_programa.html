@@ -53,16 +53,16 @@
         <p><h3>Dodaj vajo:</h3></b>
         <div class="panel-block">
           <form action="/stopnja_{{stopnja.ime}}/program_{{program.ime}}/dodaj-vajo/" method="POST" enctype="multipart/form-data">
-            <p>kategorija: <input type="text" name="kategorija" placeholder="ogrevanje, drog, sredina, skoki..."></p>
-            <p>ime vaje: <input type="text" name="ime_vaje" placeholder="plie, tendu, ogrevalna vaja, reztegovanje..."></p>
-            <p>opis: <input type="text" name="opis" placeholder="3*demi plie in en grand plie v vseh pozicijah"></p>
+            <p>kategorija: <input type="text" name="kategorija" placeholder="ogrevanje, drog, sredina, skoki..." required></p>
+            <p>ime vaje: <input type="text" name="ime_vaje" placeholder="plie, tendu, ogrevalna vaja, reztegovanje..." required></p>
+            <p>opis: <input type="text" name="opis" placeholder="3*demi plie in en grand plie v vseh pozicijah" required></p>
 
             <div class="columns">
               <div class="column">
-                <p>Izberi glasbo: <input type="file" name="glasba"></p>
+                <p>Izberi glasbo: <input type="file" name="glasba" required></p>
               </div>
               <div class="column">
-                <p>Izberi posnetek: <input type="file" name="posnetek"></p>
+                <p>Izberi posnetek: <input type="file" name="posnetek" required></p>
               </div>
             </div>
             
@@ -74,6 +74,9 @@
       <div class="column">
         <p><h3>Odstrani vajo:</h3></p>
         <div class="select is-small">
+          %if len(vaje) == 0:
+          <p>Nobene vaje ni mogoče odstarniti!</p>
+          %else:
           <form action="/stopnja_{{stopnja.ime}}/program_{{program.ime}}/odstrani-vajo/" method="POST">
             <select  name="ime_vaje">
               %for vaja in vaje:
@@ -84,6 +87,7 @@
               <input type="submit" class="button is-small" value="odstrani">
             </div></p>
           </form>
+          %end
         </div>
       </div>
 

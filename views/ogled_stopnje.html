@@ -30,7 +30,7 @@
         <p><h3>Dodaj program:</h3></b>
         <div class="panel-block">
           <form action="/stopnja_{{stopnja.ime}}/dodaj-program/" method="POST">
-            ime programa: <input type="text" name="ime_programa" placeholder="oktober, 1.dov, zaključni nastop...">
+            ime programa: <input type="text" name="ime_programa" placeholder="oktober, 1.dov, zaključni nastop..." required>
             <input type="submit" value="Dodaj!">
           </form>
         </div>
@@ -40,6 +40,9 @@
         <p><h3>Odstrani program:</h3></p>
         <div class="select is-small">
           <div class="select is-small">
+            %if len(programi) == 0:
+            <p>Nobenega programa ni mogoče odstraniti!</p>
+            %else:
             <form action="/stopnja_{{stopnja.ime}}/odstrani-program/" method="POST">
               <select  name="ime_programa">
                 %for program in programi:
@@ -50,6 +53,7 @@
                 <input type="submit" class="button is-small" value="odstrani">
               </div>
             </form>
+            %end
           </div>
         </div>
       </div>
